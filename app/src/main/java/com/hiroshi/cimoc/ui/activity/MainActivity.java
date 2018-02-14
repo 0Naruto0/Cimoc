@@ -141,7 +141,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             }
         });
         mControllerBuilderProvider = new ControllerBuilderProvider(this,
-                SourceManager.getInstance(this).new HeaderGetter(), false);
+                SourceManager.getInstance().new HeaderGetter(), false);
     }
 
     private void initFragment() {

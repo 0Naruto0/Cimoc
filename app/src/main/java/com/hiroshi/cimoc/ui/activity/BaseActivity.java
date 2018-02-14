@@ -56,13 +56,12 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     }
 
     @Override
-    public App getAppInstance() {
-        return (App) getApplication();
-    }
-
-    @Override
     public void onNightSwitch() {
         initNight();
+    }
+
+    public App getAppInstance() {
+        return (App) getApplication();
     }
 
     protected void initTheme() {

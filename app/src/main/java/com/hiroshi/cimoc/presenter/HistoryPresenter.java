@@ -22,7 +22,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")

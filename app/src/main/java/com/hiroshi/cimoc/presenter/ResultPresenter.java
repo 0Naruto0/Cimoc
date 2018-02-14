@@ -43,7 +43,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
 
     @Override
     protected void onViewAttach() {
-        mSourceManager = SourceManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance();
         if (mStateArray == null) {
             initStateArray(loadSource());
         }

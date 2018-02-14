@@ -39,10 +39,10 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mTaskManager = TaskManager.getInstance(mBaseView);
-        mTagRefManager = TagRefManager.getInstance(mBaseView);
-        mSourceManager = SourceManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
+        mTaskManager = TaskManager.getInstance();
+        mTagRefManager = TagRefManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -152,8 +152,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .doOnNext(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
-                        Backup.saveComicAuto(mBaseView.getAppInstance().getContentResolver(),
-                                mBaseView.getAppInstance().getDocumentFile(), list);
+                        Backup.saveComicAuto(list);
                     }
                 })
                 .subscribe();
@@ -206,8 +205,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                         }
                     }
                 });
-                Download.updateComicIndex(mBaseView.getAppInstance().getContentResolver(),
-                        mBaseView.getAppInstance().getDocumentFile(), cList, mComic);
+                Download.updateComicIndex(cList, mComic);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             }

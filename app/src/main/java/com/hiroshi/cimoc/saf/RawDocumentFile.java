@@ -3,12 +3,13 @@ package com.hiroshi.cimoc.saf;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -107,7 +108,12 @@ class RawDocumentFile extends DocumentFile {
 
     @Override
     public InputStream openInputStream() throws FileNotFoundException {
-        return new BufferedInputStream(new FileInputStream(mFile));
+        return new FileInputStream(mFile);
+    }
+
+    @Override
+    public OutputStream openOutputStream(String mode) throws FileNotFoundException {
+        return new FileOutputStream(mFile, mode.contains("a"));
     }
 
     @Override

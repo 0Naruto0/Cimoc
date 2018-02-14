@@ -55,11 +55,6 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     }
 
     @Override
-    public App getAppInstance() {
-        return (App) getActivity().getApplication();
-    }
-
-    @Override
     public void onNightSwitch() {}
 
     private void initProgressBar() {
@@ -78,6 +73,10 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     }
 
     protected abstract @LayoutRes int getLayoutRes();
+
+    protected App getAppInstance() {
+        return (App) getActivity().getApplication();
+    }
 
     protected void showProgressDialog() {
         ((BaseActivity) getActivity()).showProgressDialog();

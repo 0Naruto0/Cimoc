@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.presenter;
 import android.net.Uri;
 import android.os.Build;
 
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.core.Manga;
@@ -15,6 +16,7 @@ import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.saf.DocumentFile;
+import com.hiroshi.cimoc.ui.activity.ReaderActivity;
 import com.hiroshi.cimoc.ui.view.ReaderView;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -48,8 +50,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mSourceManager = SourceManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
     }
 
     @Override
@@ -123,11 +125,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
         if (mComic.getLocal()) {
             DocumentFile dir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
-                    DocumentFile.fromSubTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
+                    DocumentFile.fromSubTreeUri(((ReaderActivity) mBaseView).getAppInstance(), Uri.parse(chapter.getPath())) :
                     DocumentFile.fromFile(new File(Uri.parse(chapter.getPath()).getPath()));
             return Local.images(dir, chapter);
         }
-        return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
+        return chapter.isComplete() ? Download.images(App.getDocumentFile(),
                 mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
                 Manga.getChapterImage(mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
     }
@@ -156,8 +158,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void savePicture(InputStream inputStream, String url, String title, int page) {
-        mCompositeSubscription.add(Storage.savePicture(mBaseView.getAppInstance().getContentResolver(),
-                mBaseView.getAppInstance().getDocumentFile(), inputStream, buildPictureName(title, page, url))
+        mCompositeSubscription.add(Storage.savePicture(inputStream, buildPictureName(title, page, url))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Uri>() {
                     @Override

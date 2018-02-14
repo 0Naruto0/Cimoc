@@ -35,9 +35,9 @@ public class TaskPresenter extends BasePresenter<TaskView> {
 
     @Override
     protected void onViewAttach() {
-        mTaskManager = TaskManager.getInstance(mBaseView);
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mSourceManager = SourceManager.getInstance(mBaseView);
+        mTaskManager = TaskManager.getInstance();
+        mComicManager = ComicManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -111,8 +111,8 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     public void call(List<Task> list) {
                         updateTaskList(list);
                         if (!mComic.getLocal()) {
-                            final List<String> sList = Download.getComicIndex(mBaseView.getAppInstance().getContentResolver(),
-                                    mBaseView.getAppInstance().getDocumentFile(), mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
+                            final List<String> sList = Download.getComicIndex(mComic,
+                                    mSourceManager.getParser(mComic.getSource()).getTitle());
                             if (sList != null) {
                                 Collections.sort(list, new Comparator<Task>() {
                                     @Override
@@ -157,10 +157,10 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                         deleteFromDatabase(list, isEmpty);
                         if (!mComic.getLocal()) {
                             if (isEmpty) {
-                                Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                Download.delete(mComic,
                                         mSourceManager.getParser(mComic.getSource()).getTitle());
                             } else {
-                                Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                Download.delete(mComic,
                                         list, mSourceManager.getParser(mComic.getSource()).getTitle());
                             }
                         }
@@ -199,8 +199,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 if (isEmpty) {
                     mComic.setDownload(null);
                     mComicManager.updateOrDelete(mComic);
-                    Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
-                            mSourceManager.getParser(mComic.getSource()).getTitle());
+                    Download.delete(mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
                 }
             }
         });

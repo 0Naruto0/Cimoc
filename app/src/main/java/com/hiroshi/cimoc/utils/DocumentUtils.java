@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.utils;
 
-import android.content.ContentResolver;
-
 import com.hiroshi.cimoc.saf.DocumentFile;
 
 import java.io.BufferedInputStream;
@@ -88,11 +86,11 @@ public class DocumentUtils {
         return parent.createDirectory(displayName);
     }
 
-    public static String readLineFromFile(ContentResolver resolver, DocumentFile file) {
+    public static String readLineFromFile(DocumentFile file) {
         InputStream input = null;
         BufferedReader reader = null;
         try {
-            input = resolver.openInputStream(file.getUri());
+            input = file.openInputStream();
             if (input != null) {
                 reader = new BufferedReader(new InputStreamReader(input));
                 return reader.readLine();
@@ -105,11 +103,11 @@ public class DocumentUtils {
         return null;
     }
 
-    public static char[] readCharFromFile(ContentResolver resolver, DocumentFile file, int count) {
+    public static char[] readCharFromFile(DocumentFile file, int count) {
         InputStream input = null;
         BufferedReader reader = null;
         try {
-            input = resolver.openInputStream(file.getUri());
+            input = file.openInputStream();
             if (input != null) {
                 reader = new BufferedReader(new InputStreamReader(input));
                 char[] buffer = new char[count];
@@ -125,11 +123,11 @@ public class DocumentUtils {
         return null;
     }
 
-    public static void writeStringToFile(ContentResolver resolver, DocumentFile file, String data) throws IOException {
+    public static void writeStringToFile(DocumentFile file, String mode, String data) throws IOException {
         OutputStream output = null;
         BufferedWriter writer = null;
         try {
-            output = resolver.openOutputStream(file.getUri());
+            output = file.openOutputStream(mode);
             if (output != null) {
                 writer = new BufferedWriter(new OutputStreamWriter(output));
                 writer.write(data);
@@ -142,12 +140,16 @@ public class DocumentUtils {
         }
     }
 
-    public static void writeBinaryToFile(ContentResolver resolver, DocumentFile file, InputStream input) throws IOException {
+    public static void writeStringToFile(DocumentFile file, String data) throws IOException {
+        writeStringToFile(file, "w", data);
+    }
+
+    public static void writeBinaryToFile(DocumentFile file, InputStream input) throws IOException {
         BufferedInputStream inputStream = null;
         BufferedOutputStream outputStream = null;
 
         try {
-            OutputStream output = resolver.openOutputStream(file.getUri());
+            OutputStream output = file.openOutputStream();
 
             if (output != null) {
                 inputStream = new BufferedInputStream(input, 8192);
@@ -168,9 +170,8 @@ public class DocumentUtils {
         }
     }
 
-    public static void writeBinaryToFile(ContentResolver resolver, DocumentFile src, DocumentFile dst) throws IOException {
-        InputStream input = resolver.openInputStream(src.getUri());
-        writeBinaryToFile(resolver, dst, input);
+    public static void writeBinaryToFile(DocumentFile src, DocumentFile dst) throws IOException {
+        writeBinaryToFile(dst, src.openInputStream());
     }
 
     private static void closeStream(Closeable... stream) {

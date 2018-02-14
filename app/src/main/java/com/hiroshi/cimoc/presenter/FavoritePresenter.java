@@ -31,9 +31,9 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mSourceManager = SourceManager.getInstance(mBaseView);
-        mTagRefManager = TagRefManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
+        mTagRefManager = TagRefManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")

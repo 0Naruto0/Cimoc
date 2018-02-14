@@ -16,8 +16,8 @@ public class SourceDetailPresenter extends BasePresenter<SourceDetailView> {
 
     @Override
     protected void onViewAttach() {
-        mSourceManager = SourceManager.getInstance(mBaseView);
-        mComicManager = ComicManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance();
+        mComicManager = ComicManager.getInstance();
     }
 
     public void load(int type) {

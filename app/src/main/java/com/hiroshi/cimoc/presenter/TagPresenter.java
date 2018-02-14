@@ -22,8 +22,8 @@ public class TagPresenter extends BasePresenter<TagView> {
 
     @Override
     protected void onViewAttach() {
-        mTagManager = TagManager.getInstance(mBaseView);
-        mTagRefManager = TagRefManager.getInstance(mBaseView);
+        mTagManager = TagManager.getInstance();
+        mTagRefManager = TagRefManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")

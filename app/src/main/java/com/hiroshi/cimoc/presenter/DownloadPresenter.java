@@ -35,9 +35,9 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mTaskManager = TaskManager.getInstance(mBaseView);
-        mSourceManager = SourceManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
+        mTaskManager = TaskManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -92,7 +92,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                                 return comic;
                             }
                         });
-                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), comic, mSourceManager.getParser(comic.getSource()).getTitle());
+                        Download.delete(comic, mSourceManager.getParser(comic.getSource()).getTitle());
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

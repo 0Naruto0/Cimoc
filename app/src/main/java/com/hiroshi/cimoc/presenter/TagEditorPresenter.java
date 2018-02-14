@@ -33,8 +33,8 @@ public class TagEditorPresenter extends BasePresenter<TagEditorView> {
 
     @Override
     protected void onViewAttach() {
-        mTagManager = TagManager.getInstance(mBaseView);
-        mTagRefManager = TagRefManager.getInstance(mBaseView);
+        mTagManager = TagManager.getInstance();
+        mTagRefManager = TagRefManager.getInstance();
         mTagSet = new HashSet<>();
     }
 

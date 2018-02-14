@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.manager;
 
-import com.hiroshi.cimoc.component.AppGetter;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.model.TaskDao.Properties;
@@ -20,18 +20,12 @@ public class TaskManager {
 
     private TaskDao mTaskDao;
 
-    private TaskManager(AppGetter getter) {
-        mTaskDao = getter.getAppInstance().getDaoSession().getTaskDao();
+    private TaskManager() {
+        mTaskDao = App.getDaoSession().getTaskDao();
     }
 
     public List<Task> list() {
         return mTaskDao.queryBuilder().list();
-    }
-
-    public List<Task> listValid() {
-        return mTaskDao.queryBuilder()
-                .where(Properties.Max.notEq(0))
-                .list();
     }
 
     public List<Task> list(long key) {
@@ -100,11 +94,11 @@ public class TaskManager {
         });
     }
 
-    public static TaskManager getInstance(AppGetter getter) {
+    public static TaskManager getInstance() {
         if (mInstance == null) {
             synchronized (TaskManager.class) {
                 if (mInstance == null) {
-                    mInstance = new TaskManager(getter);
+                    mInstance = new TaskManager();
                 }
             }
         }

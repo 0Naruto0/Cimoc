@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
@@ -49,13 +50,13 @@ public class Storage {
         }
     }
 
-    private static boolean copyFile(ContentResolver resolver, DocumentFile src,
+    private static boolean copyFile(DocumentFile src,
                                     DocumentFile parent, Subscriber<? super String> subscriber) {
         DocumentFile file = DocumentUtils.getOrCreateFile(parent, src.getName());
         if (file != null) {
             subscriber.onNext(StringUtils.format("正在移动 %s...", src.getUri().getLastPathSegment()));
             try {
-                DocumentUtils.writeBinaryToFile(resolver, src, file);
+                DocumentUtils.writeBinaryToFile(src, file);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -64,16 +65,16 @@ public class Storage {
         return false;
     }
 
-    private static boolean copyDir(ContentResolver resolver, DocumentFile src,
+    private static boolean copyDir(DocumentFile src,
                                    DocumentFile parent, Subscriber<? super String> subscriber) {
         if (src.isDirectory()) {
             DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(parent, src.getName());
             for (DocumentFile file : src.listFiles()) {
                 if (file.isDirectory()) {
-                    if (!copyDir(resolver, file, dir, subscriber)) {
+                    if (!copyDir(file, dir, subscriber)) {
                         return false;
                     }
-                } else if (!copyFile(resolver, file, dir, subscriber)) {
+                } else if (!copyFile(file, dir, subscriber)) {
                     return false;
                 }
             }
@@ -81,11 +82,11 @@ public class Storage {
         return true;
     }
 
-    private static boolean copyDir(ContentResolver resolver, DocumentFile src,
+    private static boolean copyDir(DocumentFile src,
                                    DocumentFile dst, String name, Subscriber<? super String> subscriber) {
         DocumentFile file = src.findFile(name);
         if (file != null && file.isDirectory()) {
-            return copyDir(resolver, file, dst, subscriber);
+            return copyDir(file, dst, subscriber);
         }
         return true;
     }
@@ -103,15 +104,16 @@ public class Storage {
                 root.getUri().getPath().equals(dst.getUri().getPath());
     }
 
-    public static Observable<String> moveRootDir(final ContentResolver resolver, final DocumentFile root, final DocumentFile dst) {
+    public static Observable<String> moveRootDir(final DocumentFile dst) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
+                DocumentFile root = App.getDocumentFile();
                 if (dst.canRead() && !isDirSame(root, dst)) {
                     root.refresh();
-                    if (copyDir(resolver, root, dst, BACKUP, subscriber) &&
-                            copyDir(resolver, root, dst, DOWNLOAD, subscriber) &&
-                            copyDir(resolver, root, dst, PICTURE, subscriber)) {
+                    if (copyDir(root, dst, BACKUP, subscriber) &&
+                            copyDir(root, dst, DOWNLOAD, subscriber) &&
+                            copyDir(root, dst, PICTURE, subscriber)) {
                         deleteDir(root, BACKUP, subscriber);
                         deleteDir(root, DOWNLOAD, subscriber);
                         deleteDir(root, PICTURE, subscriber);
@@ -123,16 +125,15 @@ public class Storage {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Uri> savePicture(final ContentResolver resolver, final DocumentFile root,
-                                                 final InputStream stream, final String filename) {
+    public static Observable<Uri> savePicture(final InputStream stream, final String filename) {
         return Observable.create(new Observable.OnSubscribe<Uri>() {
             @Override
             public void call(Subscriber<? super Uri> subscriber) {
                 try {
-                    DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, PICTURE);
+                    DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(App.getDocumentFile(), PICTURE);
                     if (dir != null) {
                         DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
-                        DocumentUtils.writeBinaryToFile(resolver, file, stream);
+                        DocumentUtils.writeBinaryToFile(file, stream);
                         subscriber.onNext(file.getUri());
                         subscriber.onCompleted();
                     }

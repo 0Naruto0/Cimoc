@@ -12,6 +12,7 @@ import android.support.annotation.RequiresApi;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,7 +80,6 @@ class TreeDocumentFile extends DocumentFile {
                 mMimeType = c.getString(1);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             closeQuietly(c);
         }
@@ -91,20 +91,17 @@ class TreeDocumentFile extends DocumentFile {
             return null;
         }
 
-        DocumentFile doc = findFile(displayName);
-        if (doc != null) {
-            return null;
-        }
-
-        try {
-            Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri, null, displayName);
-            if (result != null) {
-                doc = new TreeDocumentFile(this, mContext, result, displayName, null);
-                mSubFiles.put(displayName, doc);
+        DocumentFile doc = null;
+        if (findFile(displayName) == null) {
+            try {
+                Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri, null, displayName);
+                if (result != null) {
+                    doc = new TreeDocumentFile(this, mContext, result, displayName, null);
+                    mSubFiles.put(displayName, doc);
+                }
+            } catch (FileNotFoundException e) {
             }
-        } catch (FileNotFoundException e) {
         }
-
         return doc;
     }
 
@@ -114,21 +111,19 @@ class TreeDocumentFile extends DocumentFile {
             return null;
         }
 
-        DocumentFile doc = findFile(displayName);
-        if (doc != null) {
-            return null;
-        }
-
-        try {
-            Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri,
-                    DocumentsContract.Document.MIME_TYPE_DIR, displayName);
-            if (result != null) {
-                doc = new TreeDocumentFile(this, mContext, result, displayName, DocumentsContract.Document.MIME_TYPE_DIR);
-                mSubFiles.put(displayName, doc);
+        DocumentFile doc = null;
+        if (findFile(displayName) == null) {
+            try {
+                Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri,
+                        DocumentsContract.Document.MIME_TYPE_DIR, displayName);
+                if (result != null) {
+                    doc = new TreeDocumentFile(this, mContext, result, displayName,
+                            DocumentsContract.Document.MIME_TYPE_DIR);
+                    mSubFiles.put(displayName, doc);
+                }
+            } catch (FileNotFoundException e) {
             }
-        } catch (FileNotFoundException e) {
         }
-
         return doc;
     }
 
@@ -217,6 +212,11 @@ class TreeDocumentFile extends DocumentFile {
     @Override
     public InputStream openInputStream() throws FileNotFoundException {
         return mContext.getContentResolver().openInputStream(mUri);
+    }
+
+    @Override
+    public OutputStream openOutputStream(String mode) throws FileNotFoundException {
+        return mContext.getContentResolver().openOutputStream(mUri, mode);
     }
 
     @Override

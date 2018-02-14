@@ -20,7 +20,7 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
     }
 
     @Override

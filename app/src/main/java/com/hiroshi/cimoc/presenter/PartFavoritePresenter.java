@@ -33,8 +33,8 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mTagRefManager = TagRefManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
+        mTagRefManager = TagRefManager.getInstance();
         mSavedComic = new LongSparseArray<>();
     }
 

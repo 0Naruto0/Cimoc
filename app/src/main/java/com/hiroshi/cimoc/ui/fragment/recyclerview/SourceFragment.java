@@ -84,7 +84,7 @@ public class SourceFragment extends RecyclerViewFragment implements SourceView, 
     @Override
     public void onItemClick(View view, int position) {
         Source source = mSourceAdapter.getItem(position);
-        if (SourceManager.getInstance(this).getParser(source.getType()).getCategory() == null) {
+        if (SourceManager.getInstance().getParser(source.getType()).getCategory() == null) {
             HintUtils.showToast(getActivity(), R.string.common_execute_fail);
         } else {
             Intent intent = CategoryActivity.createIntent(getActivity(), source.getType(), source.getTitle());

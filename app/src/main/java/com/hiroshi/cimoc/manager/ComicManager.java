@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.manager;
 
-import com.hiroshi.cimoc.component.AppGetter;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
@@ -24,8 +24,8 @@ public class ComicManager {
 
     private ComicDao mComicDao;
 
-    private ComicManager(AppGetter getter) {
-        mComicDao = getter.getAppInstance().getDaoSession().getComicDao();
+    private ComicManager() {
+        mComicDao = App.getDaoSession().getComicDao();
     }
 
     public void runInTx(Runnable runnable) {
@@ -187,11 +187,11 @@ public class ComicManager {
         comic.setId(id);
     }
 
-    public static ComicManager getInstance(AppGetter getter) {
+    public static ComicManager getInstance() {
         if (mInstance == null) {
             synchronized (ComicManager.class) {
                 if (mInstance == null) {
-                    mInstance = new ComicManager(getter);
+                    mInstance = new ComicManager();
                 }
             }
         }

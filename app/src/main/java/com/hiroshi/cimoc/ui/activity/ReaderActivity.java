@@ -327,9 +327,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     @Override
     public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source, boolean local) {
         mImagePipelineFactory = ImagePipelineFactoryBuilder
-                .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(), false);
+                .build(this, local ? null : SourceManager.getInstance().getParser(source).getHeader(), false);
         mLargeImagePipelineFactory = ImagePipelineFactoryBuilder
-                .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(), true);
+                .build(this, local ? null : SourceManager.getInstance().getParser(source).getHeader(), true);
         mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory),
                 ControllerBuilderSupplierFactory.get(this, mLargeImagePipelineFactory));
         mReaderAdapter.addAll(list);

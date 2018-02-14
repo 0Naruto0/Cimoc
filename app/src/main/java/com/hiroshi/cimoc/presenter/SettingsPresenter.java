@@ -31,8 +31,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mTaskManager = TaskManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
+        mTaskManager = TaskManager.getInstance();
     }
 
     public void clearCache() {
@@ -40,8 +40,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void moveFiles(DocumentFile dst) {
-        mCompositeSubscription.add(Storage.moveRootDir(mBaseView.getAppInstance().getContentResolver(),
-                mBaseView.getAppInstance().getDocumentFile(), dst)
+        mCompositeSubscription.add(Storage.moveRootDir(dst)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -69,7 +68,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     public void scanTask() {
         // Todo 重写一下
-        mCompositeSubscription.add(Download.scan(mBaseView.getAppInstance().getContentResolver(), mBaseView.getAppInstance().getDocumentFile())
+        mCompositeSubscription.add(Download.scan()
                 .doOnNext(new Action1<Pair<Comic, List<Task>>>() {
                     @Override
                     public void call(Pair<Comic, List<Task>> pair) {

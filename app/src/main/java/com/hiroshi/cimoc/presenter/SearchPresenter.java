@@ -20,7 +20,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     @Override
     protected void onViewAttach() {
-        mSourceManager = SourceManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance();
     }
 
     public void loadSource() {

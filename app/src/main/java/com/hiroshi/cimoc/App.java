@@ -7,7 +7,6 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.helper.DBOpenHelper;
@@ -29,7 +28,7 @@ import okhttp3.OkHttpClient;
 /**
  * Created by Hiroshi on 2016/7/5.
  */
-public class App extends Application implements AppGetter, Thread.UncaughtExceptionHandler {
+public class App extends Application implements Thread.UncaughtExceptionHandler {
 
     public static int mWidthPixels;
     public static int mHeightPixels;
@@ -38,26 +37,28 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     public static int mLargePixels;
 
     private static OkHttpClient mHttpClient;
+    private static DocumentFile mDocumentFile;
+    private static DaoSession mDaoSession;
 
-    private DocumentFile mDocumentFile;
     private PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
     private RecyclerView.RecycledViewPool mRecycledPool;
-    private DaoSession mDaoSession;
     private ActivityLifecycle mActivityLifecycle;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        mPreferenceManager = new PreferenceManager(this);
+        initRootDocumentFile();
         Thread.setDefaultUncaughtExceptionHandler(this);
         mActivityLifecycle = new ActivityLifecycle();
         registerActivityLifecycleCallbacks(mActivityLifecycle);
-        mPreferenceManager = new PreferenceManager(this);
         DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
         mDaoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
         UpdateHelper.update(mPreferenceManager, getDaoSession());
         Fresco.initialize(this);
         initPixels();
+        mHttpClient = new OkHttpClient();
     }
 
     @Override
@@ -75,16 +76,11 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
             DocumentFile doc = getDocumentFile();
             DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(doc, "log");
             DocumentFile file = DocumentUtils.getOrCreateFile(dir, StringUtils.getDateStringWithSuffix("log"));
-            DocumentUtils.writeStringToFile(getContentResolver(), file, sb.toString());
+            DocumentUtils.writeStringToFile(file, sb.toString());
         } catch (Exception ex) {
         }
         mActivityLifecycle.clear();
         System.exit(1);
-    }
-
-    @Override
-    public App getAppInstance() {
-        return this;
     }
 
     private void initPixels() {
@@ -102,17 +98,6 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         mDocumentFile = Storage.initRoot(this, uri);
     }
 
-    public DocumentFile getDocumentFile() {
-        if (mDocumentFile == null) {
-            initRootDocumentFile();
-        }
-        return mDocumentFile;
-    }
-
-    public DaoSession getDaoSession() {
-        return mDaoSession;
-    }
-
     public PreferenceManager getPreferenceManager() {
         return mPreferenceManager;
     }
@@ -128,16 +113,21 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     public ControllerBuilderProvider getBuilderProvider() {
         if (mBuilderProvider == null) {
             mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(),
-                    SourceManager.getInstance(this).new HeaderGetter(), true);
+                    SourceManager.getInstance().new HeaderGetter(), true);
         }
         return mBuilderProvider;
     }
 
     public static OkHttpClient getHttpClient() {
-        if (mHttpClient == null) {
-            mHttpClient = new OkHttpClient();
-        }
         return mHttpClient;
+    }
+
+    public static DocumentFile getDocumentFile() {
+        return mDocumentFile;
+    }
+
+    public static DaoSession getDaoSession() {
+        return mDaoSession;
     }
 
 }

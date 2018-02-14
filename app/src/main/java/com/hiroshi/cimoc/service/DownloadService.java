@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.service;
 
 import android.app.Service;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
@@ -12,7 +11,6 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.global.Extra;
@@ -47,7 +45,7 @@ import okhttp3.Response;
 /**
  * Created by Hiroshi on 2016/9/1.
  */
-public class DownloadService extends Service implements AppGetter {
+public class DownloadService extends Service {
 
     private static final String NOTIFICATION_DOWNLOAD = "NOTIFICATION_DOWNLOAD";
 
@@ -57,7 +55,6 @@ public class DownloadService extends Service implements AppGetter {
     private NotificationWrapper mNotification;
     private TaskManager mTaskManager;
     private SourceManager mSourceManager;
-    private ContentResolver mContentResolver;
 
     @Nullable
     @Override
@@ -73,9 +70,8 @@ public class DownloadService extends Service implements AppGetter {
         mWorkerArray = new LongSparseArray<>();
         mExecutorService = Executors.newFixedThreadPool(num);
         mHttpClient = App.getHttpClient();
-        mTaskManager = TaskManager.getInstance(this);
-        mSourceManager = SourceManager.getInstance(this);
-        mContentResolver = getContentResolver();
+        mTaskManager = TaskManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
     }
 
     @Override
@@ -104,11 +100,6 @@ public class DownloadService extends Service implements AppGetter {
             mExecutorService.shutdownNow();
             notifyCompleted();
         }
-    }
-
-    @Override
-    public App getAppInstance() {
-        return (App) getApplication();
     }
 
     public synchronized void addWorker(long id, Worker worker, Future future) {
@@ -168,7 +159,7 @@ public class DownloadService extends Service implements AppGetter {
                 List<ImageUrl> list = onDownloadParse();
                 int size = list.size();
                 if (size != 0) {
-                    DocumentFile dir = Download.updateChapterIndex(mContentResolver, getAppInstance().getDocumentFile(), mTask);
+                    DocumentFile dir = Download.updateChapterIndex(mTask);
                     if (dir != null) {
                         mTask.setMax(size);
                         mTask.setState(Task.STATE_DOING);
@@ -215,7 +206,7 @@ public class DownloadService extends Service implements AppGetter {
                     if (response.isSuccessful()) {
                         String displayName = buildFileName(num, url);
                         DocumentFile file = DocumentUtils.getOrCreateFile(parent, displayName);
-                        DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());
+                        DocumentUtils.writeBinaryToFile(file, response.body().byteStream());
                         return true;
                     }
                 } catch (SocketTimeoutException e) {

@@ -38,8 +38,8 @@ public class LocalPresenter extends BasePresenter<LocalView> {
 
     @Override
     protected void onViewAttach() {
-        mComicManager = ComicManager.getInstance(mBaseView);
-        mTaskManager = TaskManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance();
+        mTaskManager = TaskManager.getInstance();
     }
 
     // TODO 提取出来

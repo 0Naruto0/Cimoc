@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.manager;
 
-import com.hiroshi.cimoc.component.AppGetter;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagDao;
 
@@ -21,8 +21,8 @@ public class TagManager {
 
     private TagDao mTagDao;
 
-    private TagManager(AppGetter getter) {
-        mTagDao = getter.getAppInstance().getDaoSession().getTagDao();
+    private TagManager() {
+        mTagDao = App.getDaoSession().getTagDao();
     }
 
     public List<Tag> list() {
@@ -55,11 +55,11 @@ public class TagManager {
         mTagDao.delete(entity);
     }
 
-    public static TagManager getInstance(AppGetter getter) {
+    public static TagManager getInstance() {
         if (mInstance == null) {
             synchronized (TagManager.class) {
                 if (mInstance == null) {
-                    mInstance = new TagManager(getter);
+                    mInstance = new TagManager();
                 }
             }
         }

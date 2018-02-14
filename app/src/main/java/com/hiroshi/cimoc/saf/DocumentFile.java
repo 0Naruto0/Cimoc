@@ -8,6 +8,7 @@ import android.provider.DocumentsContract;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -77,6 +78,12 @@ public abstract class DocumentFile {
     public abstract boolean exists();
 
     public abstract InputStream openInputStream() throws FileNotFoundException;
+
+    public abstract OutputStream openOutputStream(String mode) throws FileNotFoundException;
+
+    public OutputStream openOutputStream() throws FileNotFoundException {
+        return openOutputStream("w");
+    }
 
     public List<DocumentFile> listFiles(DocumentFileFilter filter) {
         return listFiles(filter, null);

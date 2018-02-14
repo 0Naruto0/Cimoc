@@ -19,7 +19,7 @@ public class ComicPresenter extends BasePresenter<ComicView> {
 
     @Override
     protected void onViewAttach() {
-        mTagManager = TagManager.getInstance(mBaseView);
+        mTagManager = TagManager.getInstance();
     }
 
     public void loadTag() {
