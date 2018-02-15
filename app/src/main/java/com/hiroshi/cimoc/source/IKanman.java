@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -55,13 +56,13 @@ public class IKanman extends MangaParser {
         Node body = new Node(html);
         return new NodeIterator(body.list("li > a")) {
             @Override
-            protected Comic parse(Node node) {
+            protected SearchResult parse(Node node) {
                 String cid = node.hrefWithSplit(1);
                 String title = node.text("h3");
                 String cover = node.attr("div > img", "data-src");
                 String update = node.text("dl:eq(5) > dd");
                 String author = node.text("dl:eq(2) > dd");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                return new SearchResult(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -136,7 +137,7 @@ public class IKanman extends MangaParser {
                 String md5 = object.getJSONObject("sl").getString("md5");
                 JSONArray array = object.getJSONArray("images");
                 for (int i = 0; i != array.length(); ++i) {
-                    String url = StringUtils.format("http://i.hamreus.com/%s?cid=%s&md5=%s", array.getString(i), chapterId, md5);
+                    String url = StringUtils.format("http://us.hamreus.com/%s?cid=%s&md5=%s", array.getString(i), chapterId, md5);
                     list.add(new ImageUrl(i + 1, url, false));
                 }
             } catch (Exception e) {
@@ -157,8 +158,8 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new ArrayList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new ArrayList<>();
         Node body = new Node(html);
         for (Node node : body.list("#AspNetPager1 > span.current")) {
             try {
@@ -177,7 +178,7 @@ public class IKanman extends MangaParser {
                 cover = node.attr("a > img", "data-src");
             }
             String update = node.textWithSubstring("span.updateon", 4, 14);
-            list.add(new Comic(TYPE, cid, title, cover, update, null));
+            list.add(new SearchResult(TYPE, cid, title, cover, update, null));
         }
         return list;
     }

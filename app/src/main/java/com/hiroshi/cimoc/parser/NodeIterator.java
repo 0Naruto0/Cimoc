@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.parser;
 
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.soup.Node;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public abstract class NodeIterator implements SearchIterator {
     }
 
     @Override
-    public Comic next() {
+    public SearchResult next() {
         return parse(iterator.next());
     }
 
@@ -33,6 +33,6 @@ public abstract class NodeIterator implements SearchIterator {
         return iterator == null;
     }
 
-    protected abstract Comic parse(Node node);
+    protected abstract SearchResult parse(Node node);
 
 }

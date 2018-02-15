@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.parser;
 
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.SearchResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +26,7 @@ public abstract class JsonIterator implements SearchIterator {
     }
 
     @Override
-    public Comic next() {
+    public SearchResult next() {
         try {
             return parse(array.getJSONObject(index++));
         } catch (JSONException e) {
@@ -39,6 +39,6 @@ public abstract class JsonIterator implements SearchIterator {
         return array == null || array.length() == 0;
     }
 
-    protected abstract Comic parse(JSONObject object);
+    protected abstract SearchResult parse(JSONObject object);
 
 }

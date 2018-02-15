@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -53,13 +54,13 @@ public class U17 extends MangaParser {
         Node body = new Node(html);
         return new NodeIterator(body.list("#comiclist > div.search_list > div.comiclist > ul > li > div")) {
             @Override
-            protected Comic parse(Node node) {
+            protected SearchResult parse(Node node) {
                 String cid = node.hrefWithSplit("div:eq(1) > h3 > strong > a", 1);
                 String title = node.attr("div:eq(1) > h3 > strong > a", "title");
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.textWithSubstring("div:eq(1) > h3 > span.fr", 7);
                 String author = node.text("div:eq(1) > h3 > a[title]");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                return new SearchResult(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -159,8 +160,8 @@ public class U17 extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new ArrayList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new ArrayList<>();
         try {
             JSONArray array = new JSONObject(html).getJSONArray("comic_list");
             for (int i = 0; i < array.length(); ++i) {
@@ -168,7 +169,7 @@ public class U17 extends MangaParser {
                 String cid = object.getString("comic_id");
                 String title = object.getString("name");
                 String cover = object.getString("cover");
-                list.add(new Comic(TYPE, cid, title, cover, null, null));
+                list.add(new SearchResult(TYPE, cid, title, cover, null, null));
             }
         } catch (JSONException e) {
             e.printStackTrace();

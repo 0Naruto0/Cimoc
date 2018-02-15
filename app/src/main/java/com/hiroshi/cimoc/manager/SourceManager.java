@@ -76,6 +76,41 @@ public class SourceManager {
         mSourceDao.update(source);
     }
 
+    public String getTitle(int type) {
+        switch (type) {
+            case IKanman.TYPE:
+                return IKanman.DEFAULT_TITLE;
+            case Dmzj.TYPE:
+                return Dmzj.DEFAULT_TITLE;
+            case HHAAZZ.TYPE:
+                return HHAAZZ.DEFAULT_TITLE;
+            case CCTuku.TYPE:
+                return CCTuku.DEFAULT_TITLE;
+            case U17.TYPE:
+                return U17.DEFAULT_TITLE;
+            case DM5.TYPE:
+                return DM5.DEFAULT_TITLE;
+            case Webtoon.TYPE:
+                return Webtoon.DEFAULT_TITLE;
+            case HHSSEE.TYPE:
+                return HHSSEE.DEFAULT_TITLE;
+            case MH57.TYPE:
+                return MH57.DEFAULT_TITLE;
+            case Dmzjv2.TYPE:
+                return Dmzjv2.DEFAULT_TITLE;
+            case Locality.TYPE:
+                return Locality.DEFAULT_TITLE;
+            case MangaNel.TYPE:
+                return MangaNel.DEFAULT_TITLE;
+/*
+            case PuFei.TYPE:
+                return PuFei.DEFAULT_TITLE;
+*/
+            default:
+                return Null.DEFAULT_TITLE;
+        }
+    }
+
     public Parser getParser(int type) {
         Parser parser = mParserArray.get(type);
         if (parser == null) {
@@ -129,14 +164,6 @@ public class SourceManager {
             mParserArray.put(type, parser);
         }
         return parser;
-    }
-
-    public class TitleGetter {
-
-        public String getTitle(int type) {
-            return getParser(type).getTitle();
-        }
-
     }
 
     public class HeaderGetter {

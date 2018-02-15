@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
@@ -64,7 +65,7 @@ public class DM5 extends MangaParser {
         try {
             return new JsonIterator(new JSONArray(html)) {
                 @Override
-                protected Comic parse(JSONObject object) {
+                protected SearchResult parse(JSONObject object) {
                     try {
                         String cid = object.getString("Url").split("/")[1];
                         String title = object.getString("Title");
@@ -75,7 +76,7 @@ public class DM5 extends MangaParser {
                         for (int i = 0; array != null && i != array.length(); ++i) {
                             author = author.concat(array.optString(i));
                         }
-                        return new Comic(TYPE, cid, title, cover, update, author);
+                        return new SearchResult(TYPE, cid, title, cover, update, author);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -197,8 +198,8 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new ArrayList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new ArrayList<>();
         Node body = new Node(html);
         for (Node node : body.list("ul.mh-list > li > div.mh-item")) {
             String cid = node.hrefWithSplit("div > h2.title > a", 0);
@@ -206,7 +207,7 @@ public class DM5 extends MangaParser {
             String cover = StringUtils.match("\\((.*?)\\)", node.attr("p.mh-cover", "style"), 1);
             String author = node.textWithSubstring("p.author", 3);
             // String update = node.text("p.zl"); 要解析好麻烦
-            list.add(new Comic(TYPE, cid, title, cover, null, author));
+            list.add(new SearchResult(TYPE, cid, title, cover, null, author));
         }
         return list;
     }

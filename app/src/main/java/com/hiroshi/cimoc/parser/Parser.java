@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.parser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
@@ -119,7 +120,7 @@ public interface Parser {
      * @param html 页面源代码
      * @param page 页面，可能对于一些判断有用
      */
-    List<Comic> parseCategory(String html, int page);
+    List<SearchResult> parseCategory(String html, int page);
 
     /**
      * 获取图源标题，为了方便强行塞进来的

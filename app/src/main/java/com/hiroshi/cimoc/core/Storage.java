@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.net.Uri;

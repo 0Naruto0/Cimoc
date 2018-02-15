@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -50,11 +51,11 @@ public class HHSSEE extends MangaParser {
         Node body = new Node(html);
         return new NodeIterator(body.list("#list > div.cComicList > li > a")) {
             @Override
-            protected Comic parse(Node node) {
+            protected SearchResult parse(Node node) {
                 String cid = node.hrefWithSubString(7, -6);
                 String title = node.text();
                 String cover = node.src("img");
-                return new Comic(TYPE, cid, title, cover, null, null);
+                return new SearchResult(TYPE, cid, title, cover, null, null);
             }
         };
     }
@@ -168,14 +169,14 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new ArrayList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new ArrayList<>();
         Node body = new Node(html);
         for (Node node : body.list("#list > div.cComicList > li > a")) {
             String cid = node.hrefWithSubString(7, -6);
             String title = node.attr("title");
             String cover = node.src("img");
-            list.add(new Comic(TYPE, cid, title, cover, null, null));
+            list.add(new SearchResult(TYPE, cid, title, cover, null, null));
         }
         return list;
     }

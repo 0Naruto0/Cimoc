@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -58,12 +59,12 @@ public class Webtoon extends MangaParser {
         Node body = new Node(html);
         return new NodeIterator(body.list("#ct > div._searchResultArea > ul._searchResultList > li > a")) {
             @Override
-            protected Comic parse(Node node) {
+            protected SearchResult parse(Node node) {
                 String cid = node.hrefWithSplit(-1);
                 String title = node.text("div.row > div.info > p.subj > span");
                 String cover = node.src("div.row > div.pic > img");
                 String author = node.text("div.row > div.info > p.author");
-                return new Comic(TYPE, cid, title, cover, null, author);
+                return new SearchResult(TYPE, cid, title, cover, null, author);
             }
         };
     }
@@ -151,14 +152,14 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new ArrayList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new ArrayList<>();
         Node body = new Node(html);
         for (Node node : body.list("#ct > ul > li > a")) {
             String cid = node.hrefWithSplit(-1);
             String title = node.text("div.info > p.subj > span");
             String cover = node.attrWithSplit("div.pic", "style", "\\(|\\)", 1);
-            list.add(new Comic(TYPE, cid, title, cover, null, null));
+            list.add(new SearchResult(TYPE, cid, title, cover, null, null));
         }
         return list;
     }

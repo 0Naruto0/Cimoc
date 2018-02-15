@@ -8,7 +8,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
@@ -48,7 +47,6 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     protected BaseAdapter initAdapter() {
         mGridAdapter = new GridAdapter(getActivity(), new LinkedList<MiniComic>());
         mGridAdapter.setProvider(getAppInstance().getBuilderProvider());
-        mGridAdapter.setTitleGetter(SourceManager.getInstance().new TitleGetter());
         mRecyclerView.setRecycledViewPool(getAppInstance().getGridRecycledPool());
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

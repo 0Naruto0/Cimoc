@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -48,11 +49,11 @@ public class CCTuku extends MangaParser {
         Node body = new Node(html);
         return new NodeIterator(body.list("div.updateList > div.bookList_3 > div")) {
             @Override
-            protected Comic parse(Node node) {
+            protected SearchResult parse(Node node) {
                 String cid = node.hrefWithSplit("a", 1);
                 String title = node.text("p.title > a");
                 String cover = node.src("div.book > a > img");
-                return new Comic(TYPE, cid, title, cover, null, null);
+                return new SearchResult(TYPE, cid, title, cover, null, null);
             }
         };
     }
@@ -132,8 +133,8 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new LinkedList<>();
         Node body = new Node(html);
         int total = Integer.parseInt(StringUtils.match("\\d+", body.text("div.title-banner > div > h1"), 0));
         if (page <= total) {
@@ -143,7 +144,7 @@ public class CCTuku extends MangaParser {
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
                 String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-                list.add(new Comic(TYPE, cid, title, cover, update, author));
+                list.add(new SearchResult(TYPE, cid, title, cover, update, author));
             }
         }
         return list;

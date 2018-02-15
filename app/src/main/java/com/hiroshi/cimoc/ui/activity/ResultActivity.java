@@ -11,14 +11,14 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -51,11 +51,10 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     protected void initView() {
         super.initView();
         mLayoutManager = new LinearLayoutManager(this);
-        mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
+        mResultAdapter = new ResultAdapter(this, new ArrayList<SearchResult>());
         mResultAdapter.setOnItemClickListener(this);
         mProvider = new ControllerBuilderProvider(this, SourceManager.getInstance().new HeaderGetter(), true);
         mResultAdapter.setProvider(mProvider);
-        mResultAdapter.setTitleGetter(SourceManager.getInstance().new TitleGetter());
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
@@ -109,19 +108,19 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     @Override
     public void onItemClick(View view, int position) {
-        Comic comic = mResultAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, null, comic.getSource(), comic.getCid());
+        SearchResult result = mResultAdapter.getItem(position);
+        Intent intent = DetailActivity.createIntent(this, null, result.getSourceId(), result.getComicId());
         startActivity(intent);
     }
 
     @Override
-    public void onSearchSuccess(Comic comic) {
+    public void onSearchSuccess(SearchResult result) {
         hideProgressBar();
-        mResultAdapter.add(comic);
+        mResultAdapter.add(result);
     }
 
     @Override
-    public void onLoadSuccess(List<Comic> list) {
+    public void onLoadSuccess(List<SearchResult> list) {
         hideProgressBar();
         mResultAdapter.addAll(list);
     }

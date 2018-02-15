@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.ui.view;
 
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.SearchResult;
 
 import java.util.List;
 
@@ -11,9 +11,9 @@ public interface ResultView extends BaseView {
 
     void onSearchError();
 
-    void onSearchSuccess(Comic comic);
+    void onSearchSuccess(SearchResult result);
 
-    void onLoadSuccess(List<Comic> list);
+    void onLoadSuccess(List<SearchResult> list);
 
     void onLoadFail();
 

@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -52,13 +53,13 @@ public class PuFei extends MangaParser {
         Node body = new Node(html);
         return new NodeIterator(body.list("li > a")) {
             @Override
-            protected Comic parse(Node node) {
+            protected SearchResult parse(Node node) {
                 String cid = node.hrefWithSplit(1);
                 String title = node.text("h3");
                 String cover = node.attr("div > img", "data-src");
                 String update = node.text("dl:eq(5) > dd");
                 String author = node.text("dl:eq(2) > dd");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                return new SearchResult(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -127,8 +128,8 @@ public class PuFei extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("li > a")) {
             String cid = node.hrefWithSplit(1);
@@ -136,7 +137,7 @@ public class PuFei extends MangaParser {
             String cover = node.attr("div > img", "data-src");
             String update = node.text("dl:eq(5) > dd");
             String author = node.text("dl:eq(2) > dd");
-            list.add(new Comic(TYPE, cid, title, cover, update, author));
+            list.add(new SearchResult(TYPE, cid, title, cover, update, author));
         }
         return list;
     }

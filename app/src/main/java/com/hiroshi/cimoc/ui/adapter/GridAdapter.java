@@ -31,7 +31,6 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
     public static int TYPE_GRID = 2016101213;
 
     private ControllerBuilderProvider mProvider;
-    private SourceManager.TitleGetter mTitleGetter;
     private boolean symbol = false;
 
     static class GridHolder extends BaseViewHolder {
@@ -66,7 +65,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         MiniComic comic = mDataSet.get(position);
         GridHolder gridHolder = (GridHolder) holder;
         gridHolder.comicTitle.setText(comic.getTitle());
-        gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
+        gridHolder.comicSource.setText(SourceManager.getInstance().getTitle(comic.getSource()));
         if (mProvider != null) {
             ImageRequest request = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(comic.getCover()))
@@ -83,10 +82,6 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
 
     public void setProvider(ControllerBuilderProvider provider) {
         mProvider = provider;
-    }
-
-    public void setTitleGetter(SourceManager.TitleGetter getter) {
-        mTitleGetter = getter;
     }
 
     public void setSymbol(boolean symbol) {

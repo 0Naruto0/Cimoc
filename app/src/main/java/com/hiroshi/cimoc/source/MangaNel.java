@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
@@ -76,7 +77,7 @@ public class MangaNel extends MangaParser {
         try {
             return new JsonIterator(new JSONArray(html)) {
                 @Override
-                protected Comic parse(JSONObject object) {
+                protected SearchResult parse(JSONObject object) {
                     try {
                         String cid = object.getString("nameunsigned");
                         String title = object.getString("name");
@@ -87,7 +88,7 @@ public class MangaNel extends MangaParser {
                         String cover = object.getString("image");
                         String update = object.getString("lastchapter");
                         String author = object.getString("author");
-                        return new Comic(TYPE, cid, title, cover, update, author);
+                        return new SearchResult(TYPE, cid, title, cover, update, author);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -195,8 +196,8 @@ public class MangaNel extends MangaParser {
     }
     
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new LinkedList<>();
         Node body = new Node(html);
         int total = Integer.parseInt(StringUtils.match("\\d+", body.list("div.phan-trang > a")
             .get(4)
@@ -208,7 +209,7 @@ public class MangaNel extends MangaParser {
                 String cover = node.src("a > img");
                 String update = node.list("a").get(2).text();
                 String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-                list.add(new Comic(TYPE, cid, title, cover, update, author));
+                list.add(new SearchResult(TYPE, cid, title, cover, update, author));
             }
         }
         return list;

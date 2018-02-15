@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -65,13 +66,13 @@ public class HHAAZZ extends MangaParser {
         Node body = new Node(html);
         return new NodeIterator(body.list("ul.se-list > li")) {
             @Override
-            protected Comic parse(Node node) {
+            protected SearchResult parse(Node node) {
                 String cid = node.hrefWithSplit("a.pic", 1);
                 String title = node.text("a.pic > div > h3");
                 String cover = node.src("a.pic > img");
                 String update = node.textWithSubstring("a.pic > div > p:eq(4) > span", 0, 10);
                 String author = node.text("a.pic > div > p:eq(1)");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                return new SearchResult(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -152,8 +153,8 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("li.clearfix > a.pic")) {
             String cid = node.hrefWithSplit(1);
@@ -161,7 +162,7 @@ public class HHAAZZ extends MangaParser {
             String cover = node.src("img");
             String update = node.textWithSubstring("div.con > p > span", 0, 10);
             String author = node.text("div.con > p:eq(1)");
-            list.add(new Comic(TYPE, cid, title, cover, update, author));
+            list.add(new SearchResult(TYPE, cid, title, cover, update, author));
         }
         return list;
     }

@@ -17,7 +17,7 @@ import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.SearchResult;
 
 import java.util.List;
 
@@ -26,10 +26,9 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultAdapter extends BaseAdapter<Comic> {
+public class ResultAdapter extends BaseAdapter<SearchResult> {
 
     private ControllerBuilderProvider mProvider;
-    private SourceManager.TitleGetter mTitleGetter;
 
     class ResultViewHolder extends BaseViewHolder {
         @BindView(R.id.result_comic_image) SimpleDraweeView comicImage;
@@ -43,7 +42,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         }
     }
 
-    public ResultAdapter(Context context, List<Comic> list) {
+    public ResultAdapter(Context context, List<SearchResult> list) {
         super(context, list);
     }
 
@@ -56,25 +55,21 @@ public class ResultAdapter extends BaseAdapter<Comic> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        Comic comic = mDataSet.get(position);
+        SearchResult result = mDataSet.get(position);
         ResultViewHolder viewHolder = (ResultViewHolder) holder;
-        viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicAuthor.setText(comic.getAuthor());
-        viewHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
-        viewHolder.comicUpdate.setText(comic.getUpdate());
+        viewHolder.comicTitle.setText(result.getTitle());
+        viewHolder.comicAuthor.setText(result.getAuthor());
+        viewHolder.comicSource.setText(SourceManager.getInstance().getTitle(result.getSourceId()));
+        viewHolder.comicUpdate.setText(result.getUpdate());
         ImageRequest request = ImageRequestBuilder
-                .newBuilderWithSource(Uri.parse(comic.getCover()))
+                .newBuilderWithSource(Uri.parse(result.getCover()))
                 .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
                 .build();
-        viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setImageRequest(request).build());
+        viewHolder.comicImage.setController(mProvider.get(result.getSourceId()).setImageRequest(request).build());
     }
 
     public void setProvider(ControllerBuilderProvider provider) {
         mProvider = provider;
-    }
-
-    public void setTitleGetter(SourceManager.TitleGetter getter) {
-        mTitleGetter = getter;
     }
 
     @Override

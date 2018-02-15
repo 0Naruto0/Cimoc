@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.ui.view.ResultView;
@@ -74,9 +74,9 @@ public class ResultPresenter extends BasePresenter<ResultView> {
             mStateArray[0].state = STATE_DOING;
             mCompositeSubscription.add(Manga.getCategoryComic(parser, keyword, ++mStateArray[0].page)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<Comic>>() {
+                    .subscribe(new Action1<List<SearchResult>>() {
                         @Override
-                        public void call(List<Comic> list) {
+                        public void call(List<SearchResult> list) {
                             mBaseView.onLoadSuccess(list);
                             mStateArray[0].state = STATE_NULL;
                         }
@@ -103,10 +103,10 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                 obj.state = STATE_DOING;
                 mCompositeSubscription.add(Manga.getSearchResult(parser, keyword, ++obj.page)
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<Comic>() {
+                        .subscribe(new Action1<SearchResult>() {
                             @Override
-                            public void call(Comic comic) {
-                                mBaseView.onSearchSuccess(comic);
+                            public void call(SearchResult result) {
+                                mBaseView.onSearchSuccess(result);
                             }
                         }, new Action1<Throwable>() {
                             @Override

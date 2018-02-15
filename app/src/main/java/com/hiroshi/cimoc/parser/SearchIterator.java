@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.parser;
 
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.SearchResult;
 
 /**
  * Created by Hiroshi on 2016/9/21.
@@ -12,6 +12,6 @@ public interface SearchIterator {
 
     boolean hasNext();
 
-    Comic next();
+    SearchResult next();
 
 }

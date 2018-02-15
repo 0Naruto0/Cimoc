@@ -14,7 +14,6 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
-import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -27,8 +26,8 @@ import java.util.List;
 
 public class UpdateHelper {
 
-    // 1.04.08.008
-    private static final int VERSION = 10408008;
+    // 1.04.08.009
+    private static final int VERSION = 10408009;
 
     public static void update(PreferenceManager manager, final DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);

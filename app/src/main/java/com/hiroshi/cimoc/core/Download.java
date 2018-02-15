@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.content.ContentResolver;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.App;

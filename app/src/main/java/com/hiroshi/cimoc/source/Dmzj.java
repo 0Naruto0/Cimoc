@@ -5,6 +5,7 @@ import android.util.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
@@ -57,7 +58,7 @@ public class Dmzj extends MangaParser {
         try {
             return new JsonIterator(new JSONArray(jsonString)) {
                 @Override
-                protected Comic parse(JSONObject object) {
+                protected SearchResult parse(JSONObject object) {
                     try {
                         String cid = object.getString("id");
                         String title = object.getString("name");
@@ -65,7 +66,7 @@ public class Dmzj extends MangaParser {
                         long time = object.getLong("last_updatetime") * 1000;
                         String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                         String author = object.optString("authors");
-                        return new Comic(TYPE, cid, title, cover, update, author);
+                        return new SearchResult(TYPE, cid, title, cover, update, author);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -166,8 +167,8 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
+    public List<SearchResult> parseCategory(String html, int page) {
+        List<SearchResult> list = new LinkedList<>();
         try {
             JSONArray array = new JSONArray(html);
             for (int i = 0; i != array.length(); ++i) {
@@ -180,7 +181,7 @@ public class Dmzj extends MangaParser {
                         Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
                         String update = time == null ? null : new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                         String author = object.optString("authors");
-                        list.add(new Comic(TYPE, cid, title, cover, update, author));
+                        list.add(new SearchResult(TYPE, cid, title, cover, update, author));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -5,6 +5,7 @@ import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.parser.SearchIterator;
 
@@ -21,7 +22,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
@@ -31,10 +31,10 @@ import rx.schedulers.Schedulers;
  */
 public class Manga {
 
-    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword, final int page) {
-        return Observable.create(new Observable.OnSubscribe<Comic>() {
+    public static Observable<SearchResult> getSearchResult(final Parser parser, final String keyword, final int page) {
+        return Observable.create(new Observable.OnSubscribe<SearchResult>() {
             @Override
-            public void call(Subscriber<? super Comic> subscriber) {
+            public void call(Subscriber<? super SearchResult> subscriber) {
                 try {
                     Request request = parser.getSearchRequest(keyword, page);
                     Random random = new Random();
@@ -44,9 +44,9 @@ public class Manga {
                         throw new Exception();
                     }
                     while (iterator.hasNext()) {
-                        Comic comic = iterator.next();
-                        if (comic != null) {
-                            subscriber.onNext(comic);
+                        SearchResult result = iterator.next();
+                        if (result != null) {
+                            subscriber.onNext(result);
                             Thread.sleep(random.nextInt(200));
                         }
                     }
@@ -84,15 +84,15 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Comic>> getCategoryComic(final Parser parser, final String format,
-                                                           final int page) {
-        return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
+    public static Observable<List<SearchResult>> getCategoryComic(final Parser parser, final String format,
+                                                                  final int page) {
+        return Observable.create(new Observable.OnSubscribe<List<SearchResult>>() {
             @Override
-            public void call(Subscriber<? super List<Comic>> subscriber) {
+            public void call(Subscriber<? super List<SearchResult>> subscriber) {
                 try {
                     Request request = parser.getCategoryRequest(format, page);
                     String html = getResponseBody(App.getHttpClient(), request);
-                    List<Comic> list = parser.parseCategory(html, page);
+                    List<SearchResult> list = parser.parseCategory(html, page);
                     if (!list.isEmpty()) {
                         subscriber.onNext(list);
                         subscriber.onCompleted();

@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.presenter;
 
 import android.util.Pair;
 
-import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.TagManager;

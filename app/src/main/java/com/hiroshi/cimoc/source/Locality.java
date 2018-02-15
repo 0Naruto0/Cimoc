@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.source;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
 
@@ -68,7 +69,7 @@ public class Locality extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
+    public List<SearchResult> parseCategory(String html, int page) {
         return null;
     }
 
