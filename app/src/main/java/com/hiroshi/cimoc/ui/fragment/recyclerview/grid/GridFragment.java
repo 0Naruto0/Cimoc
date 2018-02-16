@@ -80,7 +80,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
         Intent intent = comic.isLocal() ? TaskActivity.createIntent(getActivity(), comic.getId()) :
-                DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
+                DetailActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
     }
 
@@ -127,7 +127,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
                 getString(R.string.comic_info_title),
                 comic.getTitle(),
                 getString(R.string.comic_info_source),
-                SourceManager.getInstance().getParser(comic.getSource()).getTitle(),
+                SourceManager.getInstance().get(comic.getSource()).getName(),
                 getString(R.string.comic_info_status),
                 comic.getFinish() == null ? getString(R.string.comic_status_finish) :
                         getString(R.string.comic_status_continue),

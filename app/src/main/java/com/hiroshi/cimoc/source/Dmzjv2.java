@@ -33,15 +33,11 @@ import okhttp3.Request;
  */
 public class Dmzjv2 extends MangaParser {
 
-    public static final int TYPE = 10;
-    public static final String DEFAULT_TITLE = "动漫之家v2";
+    public static final String ID = "Dmzjv2";
+    public static final String NAME = "动漫之家v2";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
-    public Dmzjv2(Source source) {
-        init(source, new Category());
+        return new Source(ID, NAME, true);
     }
 
     @Override
@@ -64,7 +60,7 @@ public class Dmzjv2 extends MangaParser {
                         String title = object.getString("title");
                         String cover = object.getString("cover");
                         String author = object.optString("authors");
-                        return new SearchResult(TYPE, cid, title, cover, null, author);
+                        return new SearchResult(ID, cid, title, cover, null, author);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -165,7 +161,7 @@ public class Dmzjv2 extends MangaParser {
                     Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
                     String update = time == null ? null : new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                     String author = object.optString("authors");
-                    list.add(new SearchResult(TYPE, cid, title, cover, update, author));
+                    list.add(new SearchResult(ID, cid, title, cover, update, author));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -174,6 +170,11 @@ public class Dmzjv2 extends MangaParser {
             e.printStackTrace();
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

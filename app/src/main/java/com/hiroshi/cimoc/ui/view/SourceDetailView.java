@@ -6,6 +6,6 @@ package com.hiroshi.cimoc.ui.view;
 
 public interface SourceDetailView extends BaseView {
 
-    void onSourceLoadSuccess(int type, String title, long count);
+    void onSourceLoadSuccess(String id, String title, long count);
 
 }

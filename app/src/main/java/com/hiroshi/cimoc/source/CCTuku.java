@@ -27,15 +27,11 @@ import okhttp3.Request;
  */
 public class CCTuku extends MangaParser {
 
-    public static final int TYPE = 3;
-    public static final String DEFAULT_TITLE = "CC图库";
+    public static final String ID = "CCTuku";
+    public static final String NAME = "CC图库";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
-    public CCTuku(Source source) {
-        init(source, new Category());
+        return new Source(ID, NAME, true);
     }
 
     @Override
@@ -53,7 +49,7 @@ public class CCTuku extends MangaParser {
                 String cid = node.hrefWithSplit("a", 1);
                 String title = node.text("p.title > a");
                 String cover = node.src("div.book > a > img");
-                return new SearchResult(TYPE, cid, title, cover, null, null);
+                return new SearchResult(ID, cid, title, cover, null, null);
             }
         };
     }
@@ -144,10 +140,15 @@ public class CCTuku extends MangaParser {
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
                 String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-                list.add(new SearchResult(TYPE, cid, title, cover, update, author));
+                list.add(new SearchResult(ID, cid, title, cover, update, author));
             }
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

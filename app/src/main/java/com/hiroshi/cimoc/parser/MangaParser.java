@@ -14,12 +14,6 @@ import okhttp3.Request;
 public abstract class MangaParser implements Parser {
 
     protected String mTitle;
-    private Category mCategory;
-
-    protected void init(Source source, Category category) {
-        mTitle = source.getTitle();
-        mCategory = category;
-    }
 
     @Override
     public Request getChapterRequest(String html, String cid) {
@@ -48,7 +42,7 @@ public abstract class MangaParser implements Parser {
 
     @Override
     public Category getCategory() {
-        return mCategory;
+        return null;
     }
 
     @Override
@@ -60,11 +54,6 @@ public abstract class MangaParser implements Parser {
     @Override
     public List<SearchResult> parseCategory(String html, int page) {
         return null;
-    }
-
-    @Override
-    public String getTitle() {
-        return mTitle;
     }
 
     protected String[] buildUrl(String path, String[] servers) {

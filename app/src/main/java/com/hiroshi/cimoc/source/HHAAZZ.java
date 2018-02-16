@@ -26,8 +26,8 @@ import okhttp3.Request;
  */
 public class HHAAZZ extends MangaParser {
 
-    public static final int TYPE = 2;
-    public static final String DEFAULT_TITLE = "手机汗汗";
+    public static final String ID = "HHAAZZ";
+    public static final String NAME = "手机汗汗";
 
     private static final String[] servers = {
             "http://x8.1112223333.com/dm01/",
@@ -45,11 +45,7 @@ public class HHAAZZ extends MangaParser {
     };
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
-    public HHAAZZ(Source source) {
-        init(source, new Category());
+        return new Source(ID, NAME, true);
     }
 
     @Override
@@ -72,7 +68,7 @@ public class HHAAZZ extends MangaParser {
                 String cover = node.src("a.pic > img");
                 String update = node.textWithSubstring("a.pic > div > p:eq(4) > span", 0, 10);
                 String author = node.text("a.pic > div > p:eq(1)");
-                return new SearchResult(TYPE, cid, title, cover, update, author);
+                return new SearchResult(ID, cid, title, cover, update, author);
             }
         };
     }
@@ -162,9 +158,14 @@ public class HHAAZZ extends MangaParser {
             String cover = node.src("img");
             String update = node.textWithSubstring("div.con > p > span", 0, 10);
             String author = node.text("div.con > p:eq(1)");
-            list.add(new SearchResult(TYPE, cid, title, cover, update, author));
+            list.add(new SearchResult(ID, cid, title, cover, update, author));
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

@@ -45,7 +45,6 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         mSourceManager = SourceManager.getInstance();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         addSubscription(RxEvent.EVENT_COMIC_UPDATE, new Action1<RxEvent>() {
@@ -62,9 +61,9 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         });
     }
 
-    public void load(long id, int source, String cid) {
+    public void load(long id, String sourceId, String cid) {
         if (id == -1) {
-            mComic = mComicManager.loadOrCreate(source, cid);
+            mComic = mComicManager.loadOrCreate(sourceId, cid);
         } else {
             mComic = mComicManager.load(id);
         }

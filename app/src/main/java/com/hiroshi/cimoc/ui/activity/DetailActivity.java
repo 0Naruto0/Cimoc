@@ -73,9 +73,9 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         mAutoBackup = mPreference.getBoolean(PreferenceManager.PREF_BACKUP_SAVE_COMIC, true);
         mBackupCount = mPreference.getInt(PreferenceManager.PREF_BACKUP_SAVE_COMIC_COUNT, 0);
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
+        String sourceId = getIntent().getStringExtra(Extra.EXTRA_SOURCE);
         String cid = getIntent().getStringExtra(Extra.EXTRA_CID);
-        mPresenter.load(id, source, cid);
+        mPresenter.load(id, sourceId, cid);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     break;
                 case R.id.detail_search_title:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null, ResultActivity.LAUNCH_MODE_SEARCH);
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);
@@ -138,7 +138,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     break;
                 case R.id.detail_search_author:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getAuthor())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null, ResultActivity.LAUNCH_MODE_SEARCH);
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);
@@ -267,10 +267,16 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         return getString(R.string.detail);
     }
 
-    public static Intent createIntent(Context context, Long id, int source, String cid) {
+    public static Intent createIntent(Context context, Long id) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra(Extra.EXTRA_ID, id);
-        intent.putExtra(Extra.EXTRA_SOURCE, source);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context, Long id, String sourceId, String cid) {
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        intent.putExtra(Extra.EXTRA_SOURCE, sourceId);
         intent.putExtra(Extra.EXTRA_CID, cid);
         return intent;
     }

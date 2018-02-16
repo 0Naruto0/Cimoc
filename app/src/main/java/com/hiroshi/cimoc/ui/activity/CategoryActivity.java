@@ -34,11 +34,11 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
 
     @Override
     protected void initView() {
-        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
+        String sourceId = getIntent().getStringExtra(Extra.EXTRA_SOURCE);
         if (mToolbar != null) {
             mToolbar.setTitle(getIntent().getStringExtra(Extra.EXTRA_KEYWORD));
         }
-        mCategory = SourceManager.getInstance().getParser(source).getCategory();
+        mCategory = SourceManager.getInstance().getParser(sourceId).getCategory();
         initSpinner();
     }
 
@@ -75,9 +75,9 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         for (int i = 0; i != args.length; ++i) {
             args[i] = getSpinnerValue(mSpinnerList.get(i));
         }
-        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
+        String sourceId = getIntent().getStringExtra(Extra.EXTRA_SOURCE);
         String format = mCategory.getFormat(args);
-        Intent intent = ResultActivity.createIntent(this, format, source, ResultActivity.LAUNCH_MODE_CATEGORY);
+        Intent intent = ResultActivity.createIntent(this, format, sourceId, ResultActivity.LAUNCH_MODE_CATEGORY);
         startActivity(intent);
     }
 
@@ -98,9 +98,9 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         return R.layout.activity_category;
     }
 
-    public static Intent createIntent(Context context, int source, String title) {
+    public static Intent createIntent(Context context, String sourceId, String title) {
         Intent intent = new Intent(context, CategoryActivity.class);
-        intent.putExtra(Extra.EXTRA_SOURCE, source);
+        intent.putExtra(Extra.EXTRA_SOURCE, sourceId);
         intent.putExtra(Extra.EXTRA_KEYWORD, title);
         return intent;
     }

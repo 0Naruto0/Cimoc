@@ -114,7 +114,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                     String[] arr1 = new String[size];
                     boolean[] arr2 = new boolean[size];
                     for (int i = 0; i < size; ++i) {
-                        arr1[i] = mSourceList.get(i).getElement().getTitle();
+                        arr1[i] = mSourceList.get(i).getElement().getName();
                         arr2[i] = mSourceList.get(i).isEnable();
                     }
                     MultiDialogFragment fragment =
@@ -155,17 +155,17 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
         if (StringUtils.isEmpty(keyword)) {
             mInputLayout.setError(getString(R.string.search_keyword_empty));
         } else {
-            ArrayList<Integer> list = new ArrayList<>();
+            ArrayList<String> list = new ArrayList<>();
             for (Switcher<Source> switcher : mSourceList) {
                 if (switcher.isEnable()) {
-                    list.add(switcher.getElement().getType());
+                    list.add(switcher.getElement().getId());
                 }
             }
             if (list.isEmpty()) {
                 HintUtils.showToast(this, R.string.search_source_none);
             } else {
                 startActivity(ResultActivity.createIntent(this, keyword,
-                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
+                        list, ResultActivity.LAUNCH_MODE_SEARCH));
             }
         }
     }

@@ -12,7 +12,6 @@ import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.helper.DBOpenHelper;
 import com.hiroshi.cimoc.helper.UpdateHelper;
 import com.hiroshi.cimoc.manager.PreferenceManager;
-import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.misc.ActivityLifecycle;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
@@ -112,8 +111,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 
     public ControllerBuilderProvider getBuilderProvider() {
         if (mBuilderProvider == null) {
-            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(),
-                    SourceManager.getInstance().new HeaderGetter(), true);
+            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(), true);
         }
         return mBuilderProvider;
     }

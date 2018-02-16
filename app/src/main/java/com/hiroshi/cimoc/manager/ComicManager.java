@@ -123,9 +123,9 @@ public class ComicManager {
                 .list();
     }
 
-    public long countBySource(int type) {
+    public long countBySource(String sourceId) {
         return mComicDao.queryBuilder()
-                .where(Properties.Source.eq(type), Properties.Favorite.isNotNull())
+                .where(Properties.SourceId.eq(sourceId), Properties.Favorite.isNotNull())
                 .count();
     }
 
@@ -133,15 +133,15 @@ public class ComicManager {
         return mComicDao.load(id);
     }
 
-    public Comic load(int source, String cid) {
+    public Comic load(String sourceId, String cid) {
         return mComicDao.queryBuilder()
-                .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
+                .where(Properties.SourceId.eq(sourceId), Properties.Cid.eq(cid))
                 .unique();
     }
 
-    public Comic loadOrCreate(int source, String cid) {
-        Comic comic = load(source, cid);
-        return comic == null ? new Comic(source, cid) : comic;
+    public Comic loadOrCreate(String sourceId, String cid) {
+        Comic comic = load(sourceId, cid);
+        return comic == null ? new Comic(sourceId, cid) : comic;
     }
 
     public Observable<Comic> loadLast() {

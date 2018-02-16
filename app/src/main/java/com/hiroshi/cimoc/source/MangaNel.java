@@ -35,15 +35,11 @@ import okhttp3.RequestBody;
 
 public class MangaNel extends MangaParser {
 
-    public static final int TYPE = 43;
-    public static final String DEFAULT_TITLE = "MangaNel";
+    public static final String ID = "MangaNel";
+    public static final String NAME = "MangaNel";
     
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-    
-    public MangaNel(Source source) {
-        init(source, new Category());
+        return new Source(ID, NAME, true);
     }
     
     /**
@@ -88,7 +84,7 @@ public class MangaNel extends MangaParser {
                         String cover = object.getString("image");
                         String update = object.getString("lastchapter");
                         String author = object.getString("author");
-                        return new SearchResult(TYPE, cid, title, cover, update, author);
+                        return new SearchResult(ID, cid, title, cover, update, author);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -209,12 +205,17 @@ public class MangaNel extends MangaParser {
                 String cover = node.src("a > img");
                 String update = node.list("a").get(2).text();
                 String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-                list.add(new SearchResult(TYPE, cid, title, cover, update, author));
+                list.add(new SearchResult(ID, cid, title, cover, update, author));
             }
         }
         return list;
     }
-    
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
+    }
+
     private static class Category extends MangaCategory {
         
         @Override

@@ -6,7 +6,7 @@ package com.hiroshi.cimoc.model;
 public class MiniComic {
 
     private Long id;
-    private int source;
+    private String sourceId;
     private String cid;
     private String title;
     private String cover;
@@ -16,7 +16,7 @@ public class MiniComic {
 
     public MiniComic(Comic comic) {
         this.id = comic.getId();
-        this.source = comic.getSource();
+        this.sourceId = comic.getSource();
         this.cid = comic.getCid();
         this.title = comic.getTitle();
         this.cover = comic.getCover();
@@ -79,12 +79,12 @@ public class MiniComic {
         this.cid = cid;
     }
 
-    public int getSource() {
-        return source;
+    public String getSource() {
+        return sourceId;
     }
 
-    public void setSource(int source) {
-        this.source = source;
+    public void setSource(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     public Long getId() {

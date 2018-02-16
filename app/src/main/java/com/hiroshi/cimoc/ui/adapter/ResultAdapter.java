@@ -59,7 +59,7 @@ public class ResultAdapter extends BaseAdapter<SearchResult> {
         ResultViewHolder viewHolder = (ResultViewHolder) holder;
         viewHolder.comicTitle.setText(result.getTitle());
         viewHolder.comicAuthor.setText(result.getAuthor());
-        viewHolder.comicSource.setText(SourceManager.getInstance().getTitle(result.getSourceId()));
+        viewHolder.comicSource.setText(SourceManager.getInstance().get(result.getSourceId()).getName());
         viewHolder.comicUpdate.setText(result.getUpdate());
         ImageRequest request = ImageRequestBuilder
                 .newBuilderWithSource(Uri.parse(result.getCover()))

@@ -237,7 +237,7 @@ public class Backup {
             case SUFFIX_CTBF:
                 for (int i = 0; i != array.length(); ++i) {
                     JSONObject object = array.getJSONObject(i);
-                    int source = object.getInt(JSON_KEY_COMIC_SOURCE);
+                    String source = object.getString(JSON_KEY_COMIC_SOURCE);
                     String cid = object.getString(JSON_KEY_COMIC_CID);
                     String title = object.getString(JSON_KEY_COMIC_TITLE);
                     String cover = object.getString(JSON_KEY_COMIC_COVER);

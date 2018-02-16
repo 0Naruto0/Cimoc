@@ -112,7 +112,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                         updateTaskList(list);
                         if (!mComic.getLocal()) {
                             final List<String> sList = Download.getComicIndex(mComic,
-                                    mSourceManager.getParser(mComic.getSource()).getTitle());
+                                    mSourceManager.get(mComic.getSource()).getName());
                             if (sList != null) {
                                 Collections.sort(list, new Comparator<Task>() {
                                     @Override
@@ -158,10 +158,10 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                         if (!mComic.getLocal()) {
                             if (isEmpty) {
                                 Download.delete(mComic,
-                                        mSourceManager.getParser(mComic.getSource()).getTitle());
+                                        mSourceManager.get(mComic.getSource()).getName());
                             } else {
                                 Download.delete(mComic,
-                                        list, mSourceManager.getParser(mComic.getSource()).getTitle());
+                                        list, mSourceManager.get(mComic.getSource()).getName());
                             }
                         }
                     }
@@ -199,7 +199,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 if (isEmpty) {
                     mComic.setDownload(null);
                     mComicManager.updateOrDelete(mComic);
-                    Download.delete(mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
+                    Download.delete(mComic, mSourceManager.get(mComic.getSource()).getName());
                 }
             }
         });

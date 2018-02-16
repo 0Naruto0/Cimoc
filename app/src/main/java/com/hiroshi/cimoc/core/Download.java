@@ -295,7 +295,7 @@ public class Download {
                 if (!JSON_KEY_TYPE_COMIC.equals(jsonObject.get(JSON_KEY_TYPE))) {
                     return null;
                 }
-                int source = jsonObject.getInt(JSON_KEY_COMIC_SOURCE);
+                String source = jsonObject.getString(JSON_KEY_COMIC_SOURCE);
                 String title = jsonObject.getString(JSON_KEY_COMIC_TITLE);
                 String cid = jsonObject.getString(JSON_KEY_COMIC_CID);
                 String cover = jsonObject.getString(JSON_KEY_COMIC_COVER);

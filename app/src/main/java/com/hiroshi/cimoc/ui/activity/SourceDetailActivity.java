@@ -34,7 +34,7 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
 
     @Override
     protected void initData() {
-        mPresenter.load(getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1));
+        mPresenter.load(getIntent().getStringExtra(Extra.EXTRA_SOURCE));
     }
 
     @OnClick(R.id.source_detail_favorite) void onSourceFavoriteClick() {
@@ -42,8 +42,8 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
     }
 
     @Override
-    public void onSourceLoadSuccess(int type, String title, long count) {
-        mSourceType.setSummary(String.valueOf(type));
+    public void onSourceLoadSuccess(String id, String title, long count) {
+        mSourceType.setSummary(id);
         mSourceTitle.setSummary(title);
         mSourceFavorite.setSummary(String.valueOf(count));
     }
@@ -58,9 +58,9 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
         return getString(R.string.source_detail);
     }
 
-    public static Intent createIntent(Context context, int type) {
+    public static Intent createIntent(Context context, String id) {
         Intent intent = new Intent(context, SourceDetailActivity.class);
-        intent.putExtra(Extra.EXTRA_SOURCE, type);
+        intent.putExtra(Extra.EXTRA_SOURCE, id);
         return intent;
     }
 

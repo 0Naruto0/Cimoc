@@ -123,11 +123,6 @@ public interface Parser {
     List<SearchResult> parseCategory(String html, int page);
 
     /**
-     * 获取图源标题，为了方便强行塞进来的
-     */
-    String getTitle();
-
-    /**
      * 获取下载图片时的 HTTP 请求头，一般用来设置 Referer 和 Cookie
      */
     Headers getHeader();

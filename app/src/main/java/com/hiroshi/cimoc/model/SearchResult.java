@@ -6,14 +6,14 @@ package com.hiroshi.cimoc.model;
 
 public class SearchResult {
 
-    private int sourceId;
+    private String sourceId;
     private String comicId;
     private String title;
     private String cover;
     private String update;
     private String author;
 
-    public SearchResult(int sourceId, String comicId, String title, String cover, String update, String author) {
+    public SearchResult(String sourceId, String comicId, String title, String cover, String update, String author) {
         this.sourceId = sourceId;
         this.comicId = comicId;
         this.title = title;
@@ -22,11 +22,11 @@ public class SearchResult {
         this.author = author;
     }
 
-    public int getSourceId() {
+    public String getSourceId() {
         return sourceId;
     }
 
-    public void setSourceId(int sourceId) {
+    public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
     }
 

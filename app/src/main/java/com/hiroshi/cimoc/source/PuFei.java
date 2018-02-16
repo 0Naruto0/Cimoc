@@ -30,15 +30,11 @@ import okhttp3.Request;
 
 public class PuFei extends MangaParser {
 
-    public static final int TYPE = 50;
-    public static final String DEFAULT_TITLE = "扑飞漫画";
+    public static final String ID = "PuFei";
+    public static final String NAME = "扑飞漫画";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
-    public PuFei(Source source) {
-        init(source, new PuFei.Category());
+        return new Source(ID, NAME, true);
     }
 
     @Override
@@ -59,7 +55,7 @@ public class PuFei extends MangaParser {
                 String cover = node.attr("div > img", "data-src");
                 String update = node.text("dl:eq(5) > dd");
                 String author = node.text("dl:eq(2) > dd");
-                return new SearchResult(TYPE, cid, title, cover, update, author);
+                return new SearchResult(ID, cid, title, cover, update, author);
             }
         };
     }
@@ -137,9 +133,14 @@ public class PuFei extends MangaParser {
             String cover = node.attr("div > img", "data-src");
             String update = node.text("dl:eq(5) > dd");
             String author = node.text("dl:eq(2) > dd");
-            list.add(new SearchResult(TYPE, cid, title, cover, update, author));
+            list.add(new SearchResult(ID, cid, title, cover, update, author));
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

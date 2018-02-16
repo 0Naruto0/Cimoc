@@ -30,19 +30,15 @@ import okhttp3.Request;
 
 public class MH57 extends MangaParser {
 
-    public static final int TYPE = 8;
-    public static final String DEFAULT_TITLE = "57漫画";
+    public static final String ID = "MH57";
+    public static final String NAME = "57漫画";
 
     private static final String[] servers = {
             "http://images.720rs.com"
     };
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
-    public MH57(Source source) {
-        init(source, new Category());
+        return new Source(ID, NAME, true);
     }
 
     @Override
@@ -71,7 +67,7 @@ public class MH57 extends MangaParser {
                 String cover = node.attr("a:eq(0) > div.thumb > img", "data-src");
                 String update = node.text("dl:eq(4) > dd");
                 String author = node.text("dl:eq(1) > a > dd");
-                return new SearchResult(TYPE, cid, title, cover, update, author);
+                return new SearchResult(ID, cid, title, cover, update, author);
             }
         };
     }
@@ -160,9 +156,14 @@ public class MH57 extends MangaParser {
             String title = node.attr("a", "title");
             String cover = node.attr("a > img", "data-src");
             String update = node.textWithSubstring("span.updateon", 4, 14);
-            list.add(new SearchResult(TYPE, cid, title, cover, update, null));
+            list.add(new SearchResult(ID, cid, title, cover, update, null));
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

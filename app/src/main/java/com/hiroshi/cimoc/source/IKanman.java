@@ -31,15 +31,11 @@ import okhttp3.Request;
  */
 public class IKanman extends MangaParser {
 
-    public static final int TYPE = 0;
-    public static final String DEFAULT_TITLE = "看漫画";
+    public static final String ID = "IKanman";
+    public static final String NAME = "看漫画";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
-    public IKanman(Source source) {
-        init(source, new Category());
+        return new Source(ID, NAME, true);
     }
 
     @Override
@@ -62,7 +58,7 @@ public class IKanman extends MangaParser {
                 String cover = node.attr("div > img", "data-src");
                 String update = node.text("dl:eq(5) > dd");
                 String author = node.text("dl:eq(2) > dd");
-                return new SearchResult(TYPE, cid, title, cover, update, author);
+                return new SearchResult(ID, cid, title, cover, update, author);
             }
         };
     }
@@ -178,9 +174,14 @@ public class IKanman extends MangaParser {
                 cover = node.attr("a > img", "data-src");
             }
             String update = node.textWithSubstring("span.updateon", 4, 14);
-            list.add(new SearchResult(TYPE, cid, title, cover, update, null));
+            list.add(new SearchResult(ID, cid, title, cover, update, null));
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

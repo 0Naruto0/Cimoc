@@ -1,11 +1,8 @@
 package com.hiroshi.cimoc.manager;
 
-import android.util.SparseArray;
-
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
-import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.DM5;
@@ -21,10 +18,12 @@ import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Headers;
-import rx.Observable;
 
 /**
  * Created by Hiroshi on 2016/8/11.
@@ -34,126 +33,91 @@ public class SourceManager {
     private static SourceManager mInstance;
 
     private SourceDao mSourceDao;
-    private SparseArray<Parser> mParserArray = new SparseArray<>();
+    private Map<String, Parser> mParserHash = new HashMap<>();
+    private Map<String, Source> mSourceHash = new HashMap<>();
 
     private SourceManager() {
         mSourceDao = App.getDaoSession().getSourceDao();
+        for (Source source : mSourceDao.queryBuilder().list()) {
+            mSourceHash.put(source.getId(), source);
+        }
     }
 
-    public Observable<List<Source>> list() {
-        return mSourceDao.queryBuilder()
-                .orderAsc(Properties.Type)
-                .rx()
-                .list();
-    }
-
-    public Observable<List<Source>> listEnableInRx() {
-        return mSourceDao.queryBuilder()
-                .where(Properties.Enable.eq(true))
-                .orderAsc(Properties.Type)
-                .rx()
-                .list();
+    public List<Source> list() {
+        List<Source> list = new ArrayList<>();
+        for (String key : mSourceHash.keySet()) {
+            list.add(mSourceHash.get(key));
+        }
+        return list;
     }
 
     public List<Source> listEnable() {
-        return mSourceDao.queryBuilder()
-                .where(Properties.Enable.eq(true))
-                .orderAsc(Properties.Type)
-                .list();
+        List<Source> list = new ArrayList<>();
+        for (String key : mSourceHash.keySet()) {
+            Source source = mSourceHash.get(key);
+            if (source.isEnable()) {
+                list.add(mSourceHash.get(key));
+            }
+        }
+        return list;
     }
 
-    public Source load(int type) {
-        return mSourceDao.queryBuilder()
-                .where(Properties.Type.eq(type))
-                .unique();
+    public Source get(String id) {
+        return mSourceHash.get(id);
     }
 
-    public long insert(Source source) {
-        return mSourceDao.insert(source);
+    public void insert(Source source) {
+        mSourceDao.insert(source);
+        // TODO 考虑 id 相同的情况
+        mSourceHash.put(source.getId(), source);
     }
 
     public void update(Source source) {
         mSourceDao.update(source);
     }
 
-    public String getTitle(int type) {
-        switch (type) {
-            case IKanman.TYPE:
-                return IKanman.DEFAULT_TITLE;
-            case Dmzj.TYPE:
-                return Dmzj.DEFAULT_TITLE;
-            case HHAAZZ.TYPE:
-                return HHAAZZ.DEFAULT_TITLE;
-            case CCTuku.TYPE:
-                return CCTuku.DEFAULT_TITLE;
-            case U17.TYPE:
-                return U17.DEFAULT_TITLE;
-            case DM5.TYPE:
-                return DM5.DEFAULT_TITLE;
-            case Webtoon.TYPE:
-                return Webtoon.DEFAULT_TITLE;
-            case HHSSEE.TYPE:
-                return HHSSEE.DEFAULT_TITLE;
-            case MH57.TYPE:
-                return MH57.DEFAULT_TITLE;
-            case Dmzjv2.TYPE:
-                return Dmzjv2.DEFAULT_TITLE;
-            case Locality.TYPE:
-                return Locality.DEFAULT_TITLE;
-            case MangaNel.TYPE:
-                return MangaNel.DEFAULT_TITLE;
-/*
-            case PuFei.TYPE:
-                return PuFei.DEFAULT_TITLE;
-*/
-            default:
-                return Null.DEFAULT_TITLE;
-        }
-    }
-
-    public Parser getParser(int type) {
-        Parser parser = mParserArray.get(type);
+    public Parser getParser(String id) {
+        Parser parser = mParserHash.get(id);
         if (parser == null) {
-            Source source = load(type);
-            switch (type) {
-                case IKanman.TYPE:
-                    parser = new IKanman(source);
+            switch (id) {
+                case IKanman.ID:
+                    parser = new IKanman();
                     break;
-                case Dmzj.TYPE:
-                    parser = new Dmzj(source);
+                case Dmzj.ID:
+                    parser = new Dmzj();
                     break;
-                case HHAAZZ.TYPE:
-                    parser = new HHAAZZ(source);
+                case HHAAZZ.ID:
+                    parser = new HHAAZZ();
                     break;
-                case CCTuku.TYPE:
-                    parser = new CCTuku(source);
+                case CCTuku.ID:
+                    parser = new CCTuku();
                     break;
-                case U17.TYPE:
-                    parser = new U17(source);
+                case U17.ID:
+                    parser = new U17();
                     break;
-                case DM5.TYPE:
-                    parser = new DM5(source);
+                case DM5.ID:
+                    parser = new DM5();
                     break;
-                case Webtoon.TYPE:
-                    parser = new Webtoon(source);
+                case Webtoon.ID:
+                    parser = new Webtoon();
                     break;
-                case HHSSEE.TYPE:
-                    parser = new HHSSEE(source);
+                case HHSSEE.ID:
+                    parser = new HHSSEE();
                     break;
-                case MH57.TYPE:
-                    parser = new MH57(source);
+                case MH57.ID:
+                    parser = new MH57();
                     break;
-                case Dmzjv2.TYPE:
-                    parser = new Dmzjv2(source);
+                case Dmzjv2.ID:
+                    parser = new Dmzjv2();
                     break;
-                case Locality.TYPE:
+                case Locality.ID:
                     parser = new Locality();
                     break;
-                case MangaNel.TYPE:
-                    parser = new MangaNel(source);
+                case MangaNel.ID:
+                    parser = new MangaNel();
                     break;
 /*
-                case PuFei.TYPE:
+                case PuFei.ID:
                     parser = new PuFei(source);
                     break;
 */
@@ -161,17 +125,17 @@ public class SourceManager {
                     parser = new Null();
                     break;
             }
-            mParserArray.put(type, parser);
+            mParserHash.put(id, parser);
         }
         return parser;
     }
 
-    public class HeaderGetter {
-
-        public Headers getHeader(int type) {
-            return getParser(type).getHeader();
+    public Headers getHeader(String id) {
+        Parser parser = getParser(id);
+        if (parser != null) {
+            return parser.getHeader();
         }
-
+        return null;
     }
 
     public static SourceManager getInstance() {

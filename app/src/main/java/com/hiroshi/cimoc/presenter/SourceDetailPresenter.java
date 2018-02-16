@@ -20,10 +20,10 @@ public class SourceDetailPresenter extends BasePresenter<SourceDetailView> {
         mComicManager = ComicManager.getInstance();
     }
 
-    public void load(int type) {
-        Source source = mSourceManager.load(type);
-        long count = mComicManager.countBySource(type);
-        mBaseView.onSourceLoadSuccess(type, source.getTitle(), count);
+    public void load(String id) {
+        Source source = mSourceManager.get(id);
+        long count = mComicManager.countBySource(id);
+        mBaseView.onSourceLoadSuccess(id, source.getName(), count);
     }
 
 }

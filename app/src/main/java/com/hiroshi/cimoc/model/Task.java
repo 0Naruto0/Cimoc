@@ -29,7 +29,7 @@ public class Task implements Parcelable {
     @NotNull private int progress;
     @NotNull private int max;
 
-    @Transient private int source;
+    @Transient private String sourceId;
     @Transient private String cid;  // 漫画 ID
     @Transient private int state;
 
@@ -40,7 +40,7 @@ public class Task implements Parcelable {
         this.title = source.readString();
         this.progress = source.readInt();
         this.max = source.readInt();
-        this.source = source.readInt();
+        this.sourceId = source.readString();
         this.cid = source.readString();
         this.state = source.readInt();
     }
@@ -126,12 +126,12 @@ public class Task implements Parcelable {
         this.state = state;
     }
 
-    public int getSource() {
-        return this.source;
+    public String getSource() {
+        return this.sourceId;
     }
 
-    public void setSource(int source) {
-        this.source = source;
+    public void setSource(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     public String getCid() {
@@ -159,7 +159,7 @@ public class Task implements Parcelable {
         dest.writeString(title);
         dest.writeInt(progress);
         dest.writeInt(max);
-        dest.writeInt(source);
+        dest.writeString(sourceId);
         dest.writeString(cid);
         dest.writeInt(state);
     }

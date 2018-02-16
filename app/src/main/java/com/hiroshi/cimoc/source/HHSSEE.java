@@ -26,15 +26,11 @@ import okhttp3.Request;
 
 public class HHSSEE extends MangaParser {
 
-    public static final int TYPE = 7;
-    public static final String DEFAULT_TITLE = "汗汗漫画";
+    public static final String ID = "HHSSEE";
+    public static final String NAME = "汗汗漫画";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
-    public HHSSEE(Source source) {
-        init(source, new Category());
+        return new Source(ID, NAME, true);
     }
 
     @Override
@@ -55,7 +51,7 @@ public class HHSSEE extends MangaParser {
                 String cid = node.hrefWithSubString(7, -6);
                 String title = node.text();
                 String cover = node.src("img");
-                return new SearchResult(TYPE, cid, title, cover, null, null);
+                return new SearchResult(ID, cid, title, cover, null, null);
             }
         };
     }
@@ -176,9 +172,14 @@ public class HHSSEE extends MangaParser {
             String cid = node.hrefWithSubString(7, -6);
             String title = node.attr("title");
             String cover = node.src("img");
-            list.add(new SearchResult(TYPE, cid, title, cover, null, null));
+            list.add(new SearchResult(ID, cid, title, cover, null, null));
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

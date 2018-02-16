@@ -18,12 +18,8 @@ import okhttp3.Request;
 
 public class Locality extends MangaParser {
 
-    public static final int TYPE = -2;
-    public static final String DEFAULT_TITLE = "本地漫画";
-
-    public Locality() {
-        mTitle = DEFAULT_TITLE;
-    }
+    public static final String ID = "Locality";
+    public static final String NAME = "本地漫画";
 
     @Override
     public Request getSearchRequest(String keyword, int page) {

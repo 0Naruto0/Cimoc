@@ -97,7 +97,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null);
+        Intent intent = DetailActivity.createIntent(this, comic.getId());
         startActivity(intent);
     }
 

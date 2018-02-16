@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.SearchResult;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -41,7 +42,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     protected BasePresenter initPresenter() {
         String keyword = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
-        int[] source = getIntent().getIntArrayExtra(Extra.EXTRA_SOURCE);
+        List<String> source = getIntent().getStringArrayListExtra(Extra.EXTRA_SOURCE);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
         return mPresenter;
@@ -53,7 +54,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new ArrayList<SearchResult>());
         mResultAdapter.setOnItemClickListener(this);
-        mProvider = new ControllerBuilderProvider(this, SourceManager.getInstance().new HeaderGetter(), true);
+        mProvider = new ControllerBuilderProvider(this, true);
         mResultAdapter.setProvider(mProvider);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -169,14 +170,25 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
      */
     public static final int LAUNCH_MODE_CATEGORY = 1;
 
-    public static Intent createIntent(Context context, String keyword, int source, int type) {
-        return createIntent(context, keyword, new int[]{source}, type);
+    public static Intent createIntent(Context context, String keyword, int mode) {
+        List<Source> list = SourceManager.getInstance().listEnable();
+        ArrayList<String> sourceId = new ArrayList<>(list.size());
+        for (Source source : list) {
+            sourceId.add(source.getId());
+        }
+        return createIntent(context, keyword, sourceId, mode);
     }
 
-    public static Intent createIntent(Context context, String keyword, int[] array, int type) {
+    public static Intent createIntent(Context context, String keyword, String sourceId, int mode) {
+        ArrayList<String> list = new ArrayList<>(1);
+        list.add(sourceId);
+        return createIntent(context, keyword, list, mode);
+    }
+
+    public static Intent createIntent(Context context, String keyword, ArrayList<String> sourceId, int mode) {
         Intent intent = new Intent(context, ResultActivity.class);
-        intent.putExtra(Extra.EXTRA_MODE, type);
-        intent.putExtra(Extra.EXTRA_SOURCE, array);
+        intent.putExtra(Extra.EXTRA_MODE, mode);
+        intent.putStringArrayListExtra(Extra.EXTRA_SOURCE, sourceId);
         intent.putExtra(Extra.EXTRA_KEYWORD, keyword);
         return intent;
     }

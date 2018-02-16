@@ -18,13 +18,8 @@ import okhttp3.Request;
 
 public class Null extends MangaParser {
 
-    public static final int TYPE = -1;
-    public static final String DEFAULT_TITLE = "(null)";
-    public static final String DEFAULT_SERVER = null;
-
-    public Null() {
-        mTitle = DEFAULT_TITLE;
-    }
+    public static final String ID = "Null";
+    public static final String NAME = "(null)";
 
     @Override
     public Request getSearchRequest(String keyword, int page) {

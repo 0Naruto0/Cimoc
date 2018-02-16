@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.SearchResult;
-import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
@@ -23,54 +22,34 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private static final int STATE_DONE = 3;
 
     private static class State {
-        int source;
+        String source;
         int page;
         int state;
     }
 
-    private SourceManager mSourceManager;
     private State[] mStateArray;
 
     private String keyword;
     private int error = 0;
 
-    public ResultPresenter(int[] source, String keyword) {
+    public ResultPresenter(List<String> source, String keyword) {
         this.keyword = keyword;
-        if (source != null) {
-            initStateArray(source);
-        }
+        initStateArray(source);
     }
 
-    @Override
-    protected void onViewAttach() {
-        mSourceManager = SourceManager.getInstance();
-        if (mStateArray == null) {
-            initStateArray(loadSource());
-        }
-    }
-
-    private void initStateArray(int[] source) {
-        mStateArray = new State[source.length];
+    private void initStateArray(List<String> source) {
+        mStateArray = new State[source.size()];
         for (int i = 0; i != mStateArray.length; ++i) {
             mStateArray[i] = new State();
-            mStateArray[i].source = source[i];
+            mStateArray[i].source = source.get(i);
             mStateArray[i].page = 0;
             mStateArray[i].state = STATE_NULL;
         }
     }
 
-    private int[] loadSource() {
-        List<Source> list = mSourceManager.listEnable();
-        int[] source = new int[list.size()];
-        for (int i = 0; i != source.length; ++i) {
-            source[i] = list.get(i).getType();
-        }
-        return source;
-    }
-
     public void loadCategory() {
         if (mStateArray[0].state == STATE_NULL) {
-            Parser parser = mSourceManager.getParser(mStateArray[0].source);
+            Parser parser = SourceManager.getInstance().getParser(mStateArray[0].source);
             mStateArray[0].state = STATE_DOING;
             mCompositeSubscription.add(Manga.getCategoryComic(parser, keyword, ++mStateArray[0].page)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -99,7 +78,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
         }
         for (final State obj : mStateArray) {
             if (obj.state == STATE_NULL) {
-                Parser parser = mSourceManager.getParser(obj.source);
+                Parser parser = SourceManager.getInstance().getParser(obj.source);
                 obj.state = STATE_DOING;
                 mCompositeSubscription.add(Manga.getSearchResult(parser, keyword, ++obj.page)
                         .observeOn(AndroidSchedulers.mainThread())

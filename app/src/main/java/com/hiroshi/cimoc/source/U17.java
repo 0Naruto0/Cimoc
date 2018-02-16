@@ -32,16 +32,13 @@ import okhttp3.RequestBody;
  */
 public class U17 extends MangaParser {
 
-    public static final int TYPE = 4;
-    public static final String DEFAULT_TITLE = "有妖气";
+    public static final String ID = "U17";
+    public static final String NAME = "有妖气";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
+        return new Source(ID, NAME, true);
     }
 
-    public U17(Source source) {
-        init(source, new Category());
-    }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -60,7 +57,7 @@ public class U17 extends MangaParser {
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.textWithSubstring("div:eq(1) > h3 > span.fr", 7);
                 String author = node.text("div:eq(1) > h3 > a[title]");
-                return new SearchResult(TYPE, cid, title, cover, update, author);
+                return new SearchResult(ID, cid, title, cover, update, author);
             }
         };
     }
@@ -169,12 +166,17 @@ public class U17 extends MangaParser {
                 String cid = object.getString("comic_id");
                 String title = object.getString("name");
                 String cover = object.getString("cover");
-                list.add(new SearchResult(TYPE, cid, title, cover, null, null));
+                list.add(new SearchResult(ID, cid, title, cover, null, null));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return list;
+    }
+
+    @Override
+    public com.hiroshi.cimoc.parser.Category getCategory() {
+        return new Category();
     }
 
     private static class Category extends MangaCategory {

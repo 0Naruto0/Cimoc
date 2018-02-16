@@ -52,7 +52,7 @@ public class SourceAdapter extends BaseAdapter<Source> {
         super.onBindViewHolder(holder, position);
         Source source = mDataSet.get(position);
         final SourceHolder viewHolder = (SourceHolder) holder;
-        viewHolder.sourceTitle.setText(source.getTitle());
+        viewHolder.sourceTitle.setText(source.getName());
         viewHolder.sourceSwitch.setChecked(source.getEnable());
         viewHolder.sourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

@@ -92,7 +92,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                                 return comic;
                             }
                         });
-                        Download.delete(comic, mSourceManager.getParser(comic.getSource()).getTitle());
+                        Download.delete(comic, mSourceManager.get(comic.getSourceId()).getName());
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

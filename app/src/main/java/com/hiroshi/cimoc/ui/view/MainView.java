@@ -8,11 +8,11 @@ import com.hiroshi.cimoc.component.DialogCaller;
 
 public interface MainView extends BaseView, DialogCaller {
 
-    void onLastLoadSuccess(long id, int source, String cid, String title, String cover);
+    void onLastLoadSuccess(long id, String sourceId, String cid, String title, String cover);
 
     void onLastLoadFail();
 
-    void onLastChange(long id, int source, String cid, String title, String cover);
+    void onLastChange(long id, String sourceId, String cid, String title, String cover);
 
     void onUpdateReady();
 

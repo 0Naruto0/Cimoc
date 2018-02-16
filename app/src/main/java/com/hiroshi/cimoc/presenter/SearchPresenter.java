@@ -24,19 +24,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void loadSource() {
-        mCompositeSubscription.add(mSourceManager.listEnableInRx()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Source>>() {
-                    @Override
-                    public void call(List<Source> list) {
-                        mBaseView.onSourceLoadSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onSourceLoadFail();
-                    }
-                }));
+        mBaseView.onSourceLoadSuccess(mSourceManager.listEnable());
     }
 
     public void loadAutoComplete(String keyword) {

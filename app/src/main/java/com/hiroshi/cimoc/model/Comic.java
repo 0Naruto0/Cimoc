@@ -13,7 +13,7 @@ import org.greenrobot.greendao.annotation.Transient;
 public class Comic {
 
     @Id(autoincrement = true) private Long id;
-    @NotNull private int source;
+    @NotNull private String sourceId;
     @NotNull private String cid;
     @NotNull private String title;
     @NotNull private String cover;
@@ -31,28 +31,28 @@ public class Comic {
     @Transient private String intro;
     @Transient private String author;
 
-    public Comic(int source, String cid, String title, String cover, String update, String author) {
-        this(null, source, cid, title, cover == null ? "" : cover, false, false, update,
+    public Comic(String sourceId, String cid, String title, String cover, String update, String author) {
+        this(null, sourceId, cid, title, cover == null ? "" : cover, false, false, update,
                 null, null, null, null, null, null, null);
         this.author = author;
     }
 
-    public Comic(int source, String cid) {
-        this.source = source;
+    public Comic(String sourceId, String cid) {
+        this.sourceId = sourceId;
         this.cid = cid;
     }
 
-    public Comic(int source, String cid, String title, String cover, long download) {
-        this(null, source, cid, title, cover == null ? "" : cover, false, false, null,
+    public Comic(String sourceId, String cid, String title, String cover, long download) {
+        this(null, sourceId, cid, title, cover == null ? "" : cover, false, false, null,
                 null, null, null, download, null, null, null);
     }
 
-    @Generated(hash = 873921140)
-    public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover, boolean highlight,
-            boolean local, String update, Boolean finish, Long favorite, Long history, Long download, String last, Integer page,
-            String chapter) {
+    @Generated(hash = 133873703)
+    public Comic(Long id, @NotNull String sourceId, @NotNull String cid, @NotNull String title,
+            @NotNull String cover, boolean highlight, boolean local, String update, Boolean finish, Long favorite,
+            Long history, Long download, String last, Integer page, String chapter) {
         this.id = id;
-        this.source = source;
+        this.sourceId = sourceId;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
@@ -71,6 +71,8 @@ public class Comic {
     @Generated(hash = 1347984162)
     public Comic() {
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -96,7 +98,7 @@ public class Comic {
     }
 
     public String getIntro() {
-        return this.intro;
+        return intro;
     }
 
     public void setIntro(String intro) {
@@ -104,7 +106,7 @@ public class Comic {
     }
 
     public String getAuthor() {
-        return this.author;
+        return author;
     }
 
     public void setAuthor(String author) {
@@ -112,7 +114,7 @@ public class Comic {
     }
 
     public Integer getPage() {
-        return this.page;
+        return page;
     }
 
     public void setPage(Integer page) {
@@ -120,7 +122,7 @@ public class Comic {
     }
 
     public String getLast() {
-        return this.last;
+        return last;
     }
 
     public void setLast(String last) {
@@ -128,7 +130,7 @@ public class Comic {
     }
 
     public Long getHistory() {
-        return this.history;
+        return history;
     }
 
     public void setHistory(Long history) {
@@ -136,7 +138,7 @@ public class Comic {
     }
 
     public Long getFavorite() {
-        return this.favorite;
+        return favorite;
     }
 
     public void setFavorite(Long favorite) {
@@ -144,7 +146,7 @@ public class Comic {
     }
 
     public String getUpdate() {
-        return this.update;
+        return update;
     }
 
     public void setUpdate(String update) {
@@ -152,7 +154,7 @@ public class Comic {
     }
 
     public String getCover() {
-        return this.cover;
+        return cover;
     }
 
     public void setCover(String cover) {
@@ -160,7 +162,7 @@ public class Comic {
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public void setTitle(String title) {
@@ -168,23 +170,23 @@ public class Comic {
     }
 
     public String getCid() {
-        return this.cid;
+        return cid;
     }
 
     public void setCid(String cid) {
         this.cid = cid;
     }
 
-    public int getSource() {
-        return this.source;
+    public String getSource() {
+        return sourceId;
     }
 
-    public void setSource(int source) {
-        this.source = source;
+    public void setSource(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     public Long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(Long id) {
@@ -192,7 +194,7 @@ public class Comic {
     }
 
     public boolean getHighlight() {
-        return this.highlight;
+        return highlight;
     }
 
     public void setHighlight(boolean highlight) {
@@ -200,7 +202,7 @@ public class Comic {
     }
 
     public Long getDownload() {
-        return this.download;
+        return download;
     }
 
     public void setDownload(Long download) {
@@ -208,7 +210,7 @@ public class Comic {
     }
 
     public Boolean getFinish() {
-        return this.finish;
+        return finish;
     }
 
     public void setFinish(Boolean finish) {
@@ -216,7 +218,7 @@ public class Comic {
     }
 
     public boolean getLocal() {
-        return this.local;
+        return local;
     }
 
     public void setLocal(boolean local) {
@@ -224,11 +226,19 @@ public class Comic {
     }
 
     public String getChapter() {
-        return this.chapter;
+        return chapter;
     }
 
     public void setChapter(String chapter) {
         this.chapter = chapter;
+    }
+
+    public String getSourceId() {
+        return this.sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
 }

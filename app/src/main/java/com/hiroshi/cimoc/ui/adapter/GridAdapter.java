@@ -65,7 +65,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         MiniComic comic = mDataSet.get(position);
         GridHolder gridHolder = (GridHolder) holder;
         gridHolder.comicTitle.setText(comic.getTitle());
-        gridHolder.comicSource.setText(SourceManager.getInstance().getTitle(comic.getSource()));
+        gridHolder.comicSource.setText(SourceManager.getInstance().get(comic.getSource()).getName());
         if (mProvider != null) {
             ImageRequest request = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(comic.getCover()))

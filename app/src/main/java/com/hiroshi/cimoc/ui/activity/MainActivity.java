@@ -73,7 +73,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private ActionBarDrawerToggle mDrawerToggle;
     private long mExitTime = 0;
     private long mLastId = -1;
-    private int mLastSource = -1;
+    private String mLastSourceId;
     private String mLastCid;
 
     private int mCheckItem;
@@ -132,16 +132,15 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 if (mPresenter.checkLocal(mLastId)) {
                     Intent intent = TaskActivity.createIntent(MainActivity.this, mLastId);
                     startActivity(intent);
-                } else if (mLastSource != -1 && mLastCid != null) {
-                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
+                } else if (mLastSourceId != null && mLastCid != null) {
+                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSourceId, mLastCid);
                     startActivity(intent);
                 } else {
                     HintUtils.showToast(MainActivity.this, R.string.common_execute_fail);
                 }
             }
         });
-        mControllerBuilderProvider = new ControllerBuilderProvider(this,
-                SourceManager.getInstance().new HeaderGetter(), false);
+        mControllerBuilderProvider = new ControllerBuilderProvider(this, false);
     }
 
     private void initFragment() {
@@ -309,8 +308,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    public void onLastLoadSuccess(long id, int source, String cid, String title, String cover) {
-        onLastChange(id, source, cid, title,cover);
+    public void onLastLoadSuccess(long id, String sourceId, String cid, String title, String cover) {
+        onLastChange(id, sourceId, cid, title,cover);
     }
 
     @Override
@@ -319,16 +318,16 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    public void onLastChange(long id, int source, String cid, String title, String cover) {
+    public void onLastChange(long id, String sourceId, String cid, String title, String cover) {
         mLastId = id;
-        mLastSource = source;
+        mLastSourceId = sourceId;
         mLastCid = cid;
         mLastText.setText(title);
         ImageRequest request = ImageRequestBuilder
                 .newBuilderWithSource(Uri.parse(cover))
                 .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
                 .build();
-        DraweeController controller = mControllerBuilderProvider.get(source)
+        DraweeController controller = mControllerBuilderProvider.get(sourceId)
                 .setOldController(mDraweeView.getController())
                 .setImageRequest(request)
                 .build();
