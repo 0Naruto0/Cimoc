@@ -42,7 +42,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     protected BasePresenter initPresenter() {
         String keyword = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
-        List<String> source = getIntent().getStringArrayListExtra(Extra.EXTRA_SOURCE);
+        List<String> source = getIntent().getStringArrayListExtra(Extra.EXTRA_SOURCE_ID);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
         return mPresenter;
@@ -110,7 +110,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     public void onItemClick(View view, int position) {
         SearchResult result = mResultAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, null, result.getSourceId(), result.getComicId());
+        Intent intent = DetailActivity.createIntent(this, mPresenter.getComicId(result));
         startActivity(intent);
     }
 
@@ -188,7 +188,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     public static Intent createIntent(Context context, String keyword, ArrayList<String> sourceId, int mode) {
         Intent intent = new Intent(context, ResultActivity.class);
         intent.putExtra(Extra.EXTRA_MODE, mode);
-        intent.putStringArrayListExtra(Extra.EXTRA_SOURCE, sourceId);
+        intent.putStringArrayListExtra(Extra.EXTRA_SOURCE_ID, sourceId);
         intent.putExtra(Extra.EXTRA_KEYWORD, keyword);
         return intent;
     }

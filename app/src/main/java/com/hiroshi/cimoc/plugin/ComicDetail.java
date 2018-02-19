@@ -1,41 +1,25 @@
-package com.hiroshi.cimoc.model;
+package com.hiroshi.cimoc.plugin;
 
 /**
  * Created by Hiroshi on 2018/2/15.
  */
 
-public class SearchResult {
+public class ComicDetail {
 
-    private String sourceId;
-    private String remoteId;
     private String title;
     private String cover;
     private String update;
+    private String summary;
     private String author;
+    private boolean completed;
 
-    public SearchResult(String sourceId, String remoteId, String title, String cover, String update, String author) {
-        this.sourceId = sourceId;
-        this.remoteId = remoteId;
+    public ComicDetail(String title, String cover, String update, String summary, String author, boolean completed) {
         this.title = title;
         this.cover = cover;
         this.update = update;
+        this.summary = summary;
         this.author = author;
-    }
-
-    public String getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(String sourceId) {
-        this.sourceId = sourceId;
-    }
-
-    public String getRemoteId() {
-        return remoteId;
-    }
-
-    public void setRemoteId(String remoteId) {
-        this.remoteId = remoteId;
+        this.completed = completed;
     }
 
     public String getTitle() {
@@ -62,12 +46,28 @@ public class SearchResult {
         this.update = update;
     }
 
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
     public String getAuthor() {
         return author;
     }
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
 }

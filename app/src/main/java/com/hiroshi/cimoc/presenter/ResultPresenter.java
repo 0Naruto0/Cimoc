@@ -1,7 +1,9 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.ui.view.ResultView;
@@ -106,6 +108,15 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                         }));
             }
         }
+    }
+
+    public long getComicId(SearchResult result) {
+        Comic comic = ComicManager.getInstance().get(result.getSourceId(), result.getRemoteId());
+        if (comic == null) {
+            comic = new Comic(result.getSourceId(), result.getRemoteId());
+            ComicManager.getInstance().insertTemp(comic);
+        }
+        return comic.getId();
     }
 
 }

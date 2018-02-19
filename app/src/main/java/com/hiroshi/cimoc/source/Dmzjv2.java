@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -80,7 +81,7 @@ public class Dmzjv2 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String intro = body.textWithSubstring("p.txtDesc", 3);
         String title = body.attr("#Cover > img", "title");
@@ -88,7 +89,7 @@ public class Dmzjv2 extends MangaParser {
         String author = body.text("div.Introduct_Sub > div.sub_r > p:eq(0) > a");
         String update = body.textWithSubstring("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
         boolean status = isFinish(body.text("div.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override

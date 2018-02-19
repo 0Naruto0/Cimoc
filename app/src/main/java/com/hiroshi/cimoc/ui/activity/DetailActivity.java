@@ -72,10 +72,8 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     protected void initData() {
         mAutoBackup = mPreference.getBoolean(PreferenceManager.PREF_BACKUP_SAVE_COMIC, true);
         mBackupCount = mPreference.getInt(PreferenceManager.PREF_BACKUP_SAVE_COMIC_COUNT, 0);
-        long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-        String sourceId = getIntent().getStringExtra(Extra.EXTRA_SOURCE);
-        String cid = getIntent().getStringExtra(Extra.EXTRA_CID);
-        mPresenter.load(id, sourceId, cid);
+        long id = getIntent().getLongExtra(Extra.EXTRA_ID, 0);
+        mPresenter.load(id);
     }
 
     @Override
@@ -106,22 +104,14 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         if (!isProgressBarShown()) {
             switch (item.getItemId()) {
                 case R.id.detail_history:
-                    if (!mDetailAdapter.getDateSet().isEmpty()) {
-                        String path = mPresenter.getComic().getLast();
-                        if (path == null) {
-                            path = mDetailAdapter.getItem(mDetailAdapter.getDateSet().size() - 1).getPath();
-                        }
-                        startReader(path);
-                    }
+                    startReader(mDetailAdapter.getLastChapter());
                     break;
                 case R.id.detail_download:
-                    if (!mDetailAdapter.getDateSet().isEmpty()) {
-                        intent = ChapterActivity.createIntent(this, new ArrayList<>(mDetailAdapter.getDateSet()));
-                        startActivityForResult(intent, REQUEST_CODE_DOWNLOAD);
-                    }
+                    intent = ChapterActivity.createIntent(this, new ArrayList<>(mDetailAdapter.getDateSet()));
+                    startActivityForResult(intent, REQUEST_CODE_DOWNLOAD);
                     break;
                 case R.id.detail_tag:
-                    if (mPresenter.getComic().getFavorite() != null) {
+                    if (mPresenter.getComic().getFavoriteTime() != 0) {
                         intent = TagEditorActivity.createIntent(this, mPresenter.getComic().getId());
                         startActivity(intent);
                     } else {
@@ -129,16 +119,16 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     }
                     break;
                 case R.id.detail_search_title:
-                    if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), ResultActivity.LAUNCH_MODE_SEARCH);
+                    if (!StringUtils.isEmpty(mDetailAdapter.getTitle())) {
+                        intent = ResultActivity.createIntent(this, mDetailAdapter.getTitle(), ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);
                     }
                     break;
                 case R.id.detail_search_author:
-                    if (!StringUtils.isEmpty(mPresenter.getComic().getAuthor())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), ResultActivity.LAUNCH_MODE_SEARCH);
+                    if (!StringUtils.isEmpty(mDetailAdapter.getAuthor())) {
+                        intent = ResultActivity.createIntent(this, mDetailAdapter.getAuthor(), ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);
@@ -164,7 +154,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        if (mPresenter.getComic().getFavorite() != null) {
+        if (mPresenter.getComic().getFavoriteTime() != 0) {
             mPresenter.unfavoriteComic();
             increment();
             mActionButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
@@ -180,22 +170,21 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     @Override
     public void onItemClick(View view, int position) {
         if (position != 0) {
-            String path = mDetailAdapter.getItem(position - 1).getPath();
-            startReader(path);
+            startReader(mDetailAdapter.getItem(position - 1));
         }
     }
 
-    private void startReader(String path) {
-        long id = mPresenter.updateLast(path);
-        mDetailAdapter.setLast(path);
+    private void startReader(Chapter chapter) {
+        long id = mPresenter.updateComic(chapter);
+        mDetailAdapter.setChapterId(chapter.getId());
         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
         Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mDetailAdapter.getDateSet(), mode);
         startActivity(intent);
     }
 
     @Override
-    public void onLastChange(String last) {
-        mDetailAdapter.setLast(last);
+    public void onLastChapterUpdate(String chapterId) {
+        mDetailAdapter.setChapterId(chapterId);
     }
 
     @Override
@@ -220,36 +209,31 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     }
 
     @Override
-    public void onTaskAddFail() {
+    public void onTaskAddFailed() {
         hideProgressDialog();
         showSnackbar(R.string.detail_download_queue_fail);
     }
 
     @Override
-    public void onComicLoadSuccess(Comic comic) {
-        mDetailAdapter.setInfo(comic.getCover(), comic.getTitle(), comic.getAuthor(),
-                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
-
-        if (comic.getTitle() != null && comic.getCover() != null) {
-            mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance().getParser(comic.getSource()).getHeader(), false);
-            mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
-
-            int resId = comic.getFavorite() != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
-            mActionButton.setImageResource(resId);
-            mActionButton.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onChapterLoadSuccess(List<Chapter> list) {
+    public void onDetailParseSuccess(Comic comic) {
         hideProgressBar();
-        if (mPresenter.getComic().getTitle() != null && mPresenter.getComic().getCover() != null) {
-            mDetailAdapter.addAll(list);
-        }
+
+        // 保证 title != null
+        // 保证 !chapter.isEmpty()
+        mDetailAdapter.setDetail(comic.getDetail(), comic.getLastChapterId());
+        mDetailAdapter.addAll(comic.getDetail().getChapter());
+
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this,
+                SourceManager.getInstance().getParser(comic.getSourceId()).getHeader(), false);
+        mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
+
+        int resId = comic.getFavoriteTime() != 0 ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
+        mActionButton.setImageResource(resId);
+        mActionButton.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onParseError() {
+    public void onDetailParseFailed() {
         hideProgressBar();
         showSnackbar(R.string.common_parse_error);
     }
@@ -270,14 +254,6 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     public static Intent createIntent(Context context, Long id) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra(Extra.EXTRA_ID, id);
-        return intent;
-    }
-
-    public static Intent createIntent(Context context, Long id, String sourceId, String cid) {
-        Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(Extra.EXTRA_ID, id);
-        intent.putExtra(Extra.EXTRA_SOURCE, sourceId);
-        intent.putExtra(Extra.EXTRA_CID, cid);
         return intent;
     }
 

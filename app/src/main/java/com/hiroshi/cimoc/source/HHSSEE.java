@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -63,7 +64,7 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String title = body.text("#about_kit > ul > li:eq(0) > h1");
         String cover = body.src("#about_style > img");
@@ -75,7 +76,7 @@ public class HHSSEE extends MangaParser {
         String author = body.textWithSubstring("#about_kit > ul > li:eq(1)", 3);
         String intro = body.textWithSubstring("#about_kit > ul > li:eq(7)", 3);
         boolean status = isFinish(body.text("#about_kit > ul > li:eq(2)"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override

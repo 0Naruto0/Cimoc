@@ -75,7 +75,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
     }
 
     public void saveComic() {
-        mCompositeSubscription.add(mComicManager.listFavoriteOrHistoryInRx()
+        mCompositeSubscription.add(mComicManager.listBackup()
                 .map(new Func1<List<Comic>, Integer>() {
                     @Override
                     public Integer call(List<Comic> list) {
@@ -178,7 +178,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
             @Override
             public void run() {
                 for (Pair<Tag, List<Comic>> pair : list) {
-                    Tag tag = mTagManager.load(pair.first.getTitle());
+                    Tag tag = mTagManager.load(pair.first.getName());
                     if (tag == null) {
                         mTagManager.insert(pair.first);
                         tags.add(pair.first);
@@ -290,14 +290,6 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, convertToMiniComic(favorite)));
         RxBus.getInstance().post(
                 new RxEvent(RxEvent.EVENT_COMIC_HISTORY_RESTORE, convertToMiniComic(history)));
-    }
-
-    private List<MiniComic> convertToMiniComic(List<Comic> list) {
-        List<MiniComic> result = new ArrayList<>(list.size());
-        for (Comic comic : list) {
-            result.add(new MiniComic(comic));
-        }
-        return result;
     }
 
 }

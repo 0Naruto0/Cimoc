@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.manager;
 
 import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.dao.SourceDao;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.DM5;
@@ -11,10 +11,8 @@ import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
-import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
-import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -37,8 +35,8 @@ public class SourceManager {
     private Map<String, Source> mSourceHash = new HashMap<>();
 
     private SourceManager() {
-        mSourceDao = App.getDaoSession().getSourceDao();
-        for (Source source : mSourceDao.queryBuilder().list()) {
+        mSourceDao = App.getDatabase().getSourceDao();
+        for (Source source : mSourceDao.list()) {
             mSourceHash.put(source.getId(), source);
         }
     }
@@ -110,9 +108,6 @@ public class SourceManager {
                 case Dmzjv2.ID:
                     parser = new Dmzjv2();
                     break;
-                case Locality.ID:
-                    parser = new Locality();
-                    break;
                 case MangaNel.ID:
                     parser = new MangaNel();
                     break;
@@ -121,9 +116,6 @@ public class SourceManager {
                     parser = new PuFei(source);
                     break;
 */
-                default:
-                    parser = new Null();
-                    break;
             }
             mParserHash.put(id, parser);
         }

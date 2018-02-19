@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -72,7 +73,7 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String title = body.text("#ct > div.detail_info > a._btnInfo > p.subj");
         String cover = body.src("#_episodeList > li > a > div.row > div.pic > img");
@@ -84,7 +85,7 @@ public class Webtoon extends MangaParser {
         String author = body.text("#ct > div.detail_info > a._btnInfo > p.author");
         String intro = body.text("#_informationLayer > p.summary_area");
         boolean status = isFinish(body.text("#_informationLayer > div.info_update"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override

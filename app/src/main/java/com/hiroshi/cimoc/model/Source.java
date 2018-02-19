@@ -1,37 +1,38 @@
 package com.hiroshi.cimoc.model;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Unique;
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Hiroshi on 2016/8/11.
  */
-@Entity
+
+@Entity(tableName = "source")
 public class Source {
 
-    @Id private String id;
-    @NotNull private String name;
-    @NotNull private boolean enable;
+    @PrimaryKey @NonNull @ColumnInfo(name = "id") private String id;
+    @ColumnInfo(name = "name") private String name;
+    @ColumnInfo(name = "enable") private boolean enable;
 
-    @Generated(hash = 499186725)
-    public Source(String id, @NotNull String name, boolean enable) {
+    public Source(@NonNull String id, String name, boolean enable) {
         this.id = id;
         this.name = name;
         this.enable = enable;
     }
 
-    @Generated(hash = 615387317)
-    public Source() {
+    @Ignore
+    public Source(@NonNull String id, String name) {
+        this(id, name, true);
     }
 
-    public String getId() {
+    public @NonNull String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
@@ -49,10 +50,6 @@ public class Source {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
-    }
-
-    public boolean getEnable() {
-        return this.enable;
     }
 
 }

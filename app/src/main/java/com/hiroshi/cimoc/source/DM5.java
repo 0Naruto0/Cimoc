@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -90,7 +91,7 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String title = body.textWithSplit("div.banner_detail_form > div.info > p.title", " ", 0);
         String cover = body.src("div.banner_detail_form > div.cover > img");
@@ -122,7 +123,7 @@ public class DM5 extends MangaParser {
             intro = intro.replace("[+展开]", "").replace("[-折叠]", "");
         }
         boolean status = isFinish(body.text("div.banner_detail_form > div.info > p.tip > span:eq(0)"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override

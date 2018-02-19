@@ -9,16 +9,14 @@ import com.hiroshi.cimoc.manager.TagRefManager;
 import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -50,95 +48,93 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         addSubscription(RxEvent.EVENT_COMIC_UPDATE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                if (mComic.getId() != null && mComic.getId() == (long) rxEvent.getData()) {
-                    Comic comic = mComicManager.load(mComic.getId());
-                    mComic.setPage(comic.getPage());
-                    mComic.setLast(comic.getLast());
-                    mComic.setChapter(comic.getChapter());
-                    mBaseView.onLastChange(mComic.getLast());
+                // 可能存在多个详情界面
+                if (rxEvent.getId() == mComic.getId()) {
+                    mBaseView.onLastChapterUpdate(mComic.getLastChapterId());
                 }
             }
         });
     }
 
-    public void load(long id, String sourceId, String cid) {
-        if (id == -1) {
-            mComic = mComicManager.loadOrCreate(sourceId, cid);
+    public void load(long id) {
+        mComic = mComicManager.get(id);
+        markAsRead();
+        if (mComic.getDetail() != null) {
+            updateChapterList(mComic.getDetail().getChapter());
+            mBaseView.onDetailParseSuccess(mComic);
         } else {
-            mComic = mComicManager.load(id);
+            load();
         }
-        cancelHighlight();
-        load();
     }
 
     private void updateChapterList(List<Chapter> list) {
-        Map<String, Task> map = new HashMap<>();
-        for (Task task : mTaskManager.list(mComic.getId())) {
-            map.put(task.getPath(), task);
-        }
-        if (!map.isEmpty()) {
-            for (Chapter chapter : list) {
-                Task task = map.get(chapter.getPath());
-                if (task != null) {
+        List<Task> tasks = mTaskManager.list(mComic.getId());
+        for (Chapter chapter : list) {
+            for (Task task : tasks) {
+                if (task.getChapterId().equals(chapter.getId())) {
                     chapter.setDownload(true);
-                    chapter.setCount(task.getProgress());
-                    chapter.setComplete(task.isFinish());
+                    chapter.setCount(task.getMax());
+                    chapter.setCompleted(task.isCompleted());
+                    break;
                 }
             }
         }
     }
 
     private void load() {
-        mCompositeSubscription.add(Manga.getComicInfo(mSourceManager.getParser(mComic.getSource()), mComic)
-                .doOnNext(new Action1<List<Chapter>>() {
-                    @Override
-                    public void call(List<Chapter> list) {
-                        if (mComic.getId() != null) {
-                            updateChapterList(list);
-                        }
-                    }
-                })
+        mCompositeSubscription.add(Manga.getComicInfo(mComic.getSourceId(), mComic.getRemoteId())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Chapter>>() {
+                .subscribe(new Action1<ComicDetail>() {
                     @Override
-                    public void call(List<Chapter> list) {
-                        mBaseView.onComicLoadSuccess(mComic);
-                        mBaseView.onChapterLoadSuccess(list);
+                    public void call(ComicDetail detail) {
+                        mComic.setTitle(mComic.getDetail().getTitle());
+                        mComic.setCover(mComic.getDetail().getCover());
+                        mComic.setUpdate(mComic.getDetail().getUpdate());
+                        mComic.setCompleted(mComic.getDetail().isCompleted());
+
+                        if (mComic.getId() > 0) {
+                            mComicManager.update(mComic);
+                        }
+
+                        updateChapterList(detail.getChapter());
+                        mBaseView.onDetailParseSuccess(mComic);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onComicLoadSuccess(mComic);
-                        mBaseView.onParseError();
+                        mBaseView.onDetailParseFailed();
                     }
                 }));
     }
 
-    private void cancelHighlight() {
-        if (mComic.getHighlight()) {
-            mComic.setHighlight(false);
-            mComic.setFavorite(System.currentTimeMillis());
+    private void markAsRead() {
+        if (mComic.isUnread()) {
+            mComic.setUnread(false);
+            mComic.setFavoriteTime(System.currentTimeMillis());
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CANCEL_HIGHLIGHT, new MiniComic(mComic)));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_MARK_AS_READ, mComic.getId()));
         }
     }
 
-    /**
-     * 更新最后阅读
-     * @param path 最后阅读
-     * @return 漫画ID
-     */
-    public long updateLast(String path) {
-        if (mComic.getFavorite() != null) {
-            mComic.setFavorite(System.currentTimeMillis());
+    public long updateComic(Chapter chapter) {
+        if (mComic.getId() != 0) {
+            mComic.setFavoriteTime(System.currentTimeMillis());
         }
-        mComic.setHistory(System.currentTimeMillis());
-        if (!path.equals(mComic.getLast())) {
-            mComic.setLast(path);
-            mComic.setPage(1);
+        mComic.setHistoryTime(System.currentTimeMillis());
+
+        if (!chapter.getId().equals(mComic.getLastChapterId())) {
+            mComic.setLastChapterId(chapter.getId());
+            mComic.setLastChapterTitle(chapter.getTitle());
+            mComic.setLastPage(1);
         }
-        mComicManager.updateOrInsert(mComic);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_READ, new MiniComic(mComic)));
+
+        if (mComic.getId() < 0)  {
+            mComicManager.insert(mComic);
+        } else {
+            mComicManager.update(mComic);
+        }
+
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_READ, mComic.getId()));
         return mComic.getId();
     }
 
@@ -147,7 +143,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void backup() {
-        mComicManager.listFavoriteOrHistoryInRx()
+        // TODO: 重写
+        mComicManager.listBackup()
                 .doOnNext(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
@@ -158,17 +155,22 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void favoriteComic() {
-        mComic.setFavorite(System.currentTimeMillis());
-        mComicManager.updateOrInsert(mComic);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE, new MiniComic(mComic)));
+        mComic.setFavoriteTime(System.currentTimeMillis());
+
+        if (mComic.getId() < 0) {
+            mComicManager.insert(mComic);
+        } else {
+            mComicManager.update(mComic);
+        }
+
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE, mComic.getId()));
     }
 
     public void unfavoriteComic() {
-        long id = mComic.getId();
-        mComic.setFavorite(null);
-        mTagRefManager.deleteByComic(id);
-        mComicManager.updateOrDelete(mComic);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UNFAVORITE, id));
+        mComic.setFavoriteTime(0);
+        // FIXME: 更新标签 tag ref
+        mComicManager.update(mComic);
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UNFAVORITE, mComic.getId()));
     }
 
     private ArrayList<Task> getTaskList(List<Chapter> list) {

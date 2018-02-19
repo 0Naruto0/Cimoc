@@ -9,18 +9,13 @@ import android.view.WindowManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
-import com.hiroshi.cimoc.helper.DBOpenHelper;
-import com.hiroshi.cimoc.helper.UpdateHelper;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.misc.ActivityLifecycle;
-import com.hiroshi.cimoc.model.DaoMaster;
-import com.hiroshi.cimoc.model.DaoSession;
+import com.hiroshi.cimoc.misc.UpdateHelper;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
-
-import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
 import okhttp3.OkHttpClient;
 
@@ -37,7 +32,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 
     private static OkHttpClient mHttpClient;
     private static DocumentFile mDocumentFile;
-    private static DaoSession mDaoSession;
+    private static AppDatabase mDatabase;
 
     private PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
@@ -52,9 +47,8 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         Thread.setDefaultUncaughtExceptionHandler(this);
         mActivityLifecycle = new ActivityLifecycle();
         registerActivityLifecycleCallbacks(mActivityLifecycle);
-        DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
-        mDaoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
-        UpdateHelper.update(mPreferenceManager, getDaoSession());
+        mDatabase = AppDatabase.build(this);
+        UpdateHelper.update(mPreferenceManager);
         Fresco.initialize(this);
         initPixels();
         mHttpClient = new OkHttpClient();
@@ -124,8 +118,8 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         return mDocumentFile;
     }
 
-    public static DaoSession getDaoSession() {
-        return mDaoSession;
+    public static AppDatabase getDatabase() {
+        return mDatabase;
     }
 
 }

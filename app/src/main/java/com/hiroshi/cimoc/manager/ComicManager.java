@@ -1,19 +1,17 @@
 package com.hiroshi.cimoc.manager;
 
 import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.dao.ComicDao;
+import com.hiroshi.cimoc.misc.IterableLongSparseArray;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.ComicDao;
-import com.hiroshi.cimoc.model.ComicDao.Properties;
 import com.hiroshi.cimoc.model.TagRef;
-import com.hiroshi.cimoc.model.TagRefDao;
-
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/7/9.
@@ -23,92 +21,77 @@ public class ComicManager {
     private static ComicManager mInstance;
 
     private ComicDao mComicDao;
+    private long mTempId = -1;
+
+    // FIXME 可能存在并发修改
+    private IterableLongSparseArray<Comic> mComicHash;
 
     private ComicManager() {
-        mComicDao = App.getDaoSession().getComicDao();
+        mComicDao = App.getDatabase().getComicDao();
+        Observable.from(mComicDao.list()).forEach(new Action1<Comic>() {
+            @Override
+            public void call(Comic comic) {
+                mComicHash.put(comic.getId(), comic);
+            }
+        });
     }
 
-    public void runInTx(Runnable runnable) {
-        mComicDao.getSession().runInTx(runnable);
+    public Observable<List<Comic>> listFavorite() {
+        return Observable.from(mComicHash).filter(new Func1<Comic, Boolean>() {
+            @Override
+            public Boolean call(Comic comic) {
+                return comic.getFavoriteTime() != 0;
+            }
+        }).toList();
     }
 
-    public <T> T callInTx(Callable<T> callable) {
-        return mComicDao.getSession().callInTxNoException(callable);
+    public Observable<List<Comic>> listOngoing() {
+        return Observable.from(mComicHash).filter(new Func1<Comic, Boolean>() {
+            @Override
+            public Boolean call(Comic comic) {
+                return comic.getFavoriteTime() != 0 && !comic.isCompleted();
+            }
+        }).toList();
     }
 
-    public List<Comic> listDownload() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Download.isNotNull())
-                .list();
+    public Observable<List<Comic>> listCompleted() {
+        return Observable.from(mComicHash).filter(new Func1<Comic, Boolean>() {
+            @Override
+            public Boolean call(Comic comic) {
+                return comic.getFavoriteTime() != 0 && comic.isCompleted();
+            }
+        }).toList();
     }
 
-    public List<Comic> listLocal() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Local.eq(true))
-                .list();
+    public Observable<List<Comic>> listHistory() {
+        return Observable.from(mComicHash).filter(new Func1<Comic, Boolean>() {
+            @Override
+            public Boolean call(Comic comic) {
+                return comic.getHistoryTime() != 0;
+            }
+        }).toList();
     }
 
-    public Observable<List<Comic>> listLocalInRx() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Local.eq(true))
-                .rx()
-                .list();
+    public Observable<List<Comic>> listDownload() {
+        return Observable.from(mComicHash).filter(new Func1<Comic, Boolean>() {
+            @Override
+            public Boolean call(Comic comic) {
+                return comic.getDownloadTime() != 0;
+            }
+        }).toList();
     }
 
-    public Observable<List<Comic>> listFavoriteOrHistoryInRx() {
-        return mComicDao.queryBuilder()
-                .whereOr(Properties.Favorite.isNotNull(), Properties.History.isNotNull())
-                .rx()
-                .list();
+    public Observable<List<Comic>> listBackup() {
+        return Observable.from(mComicHash).filter(new Func1<Comic, Boolean>() {
+            @Override
+            public Boolean call(Comic comic) {
+                // 包括已删除漫画
+                return comic.getDownloadTime() == 0;
+            }
+        }).toList();
     }
 
-    public List<Comic> listFavorite() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull())
-                .list();
-    }
-
-    public Observable<List<Comic>> listFavoriteInRx() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull())
-                .orderDesc(Properties.Highlight, Properties.Favorite)
-                .rx()
-                .list();
-    }
-
-    public Observable<List<Comic>> listFinishInRx() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull(), Properties.Finish.eq(true))
-                .orderDesc(Properties.Highlight, Properties.Favorite)
-                .rx()
-                .list();
-    }
-
-    public Observable<List<Comic>> listContinueInRx() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull(), Properties.Finish.notEq(true))
-                .orderDesc(Properties.Highlight, Properties.Favorite)
-                .rx()
-                .list();
-    }
-
-    public Observable<List<Comic>> listHistoryInRx() {
-        return mComicDao.queryBuilder()
-                .where(Properties.History.isNotNull())
-                .orderDesc(Properties.History)
-                .rx()
-                .list();
-    }
-
-    public Observable<List<Comic>> listDownloadInRx() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Download.isNotNull())
-                .orderDesc(Properties.Download)
-                .rx()
-                .list();
-    }
-
-    public Observable<List<Comic>> listFavoriteByTag(long id) {
+    public Observable<List<Comic>> listFavoriteByTagId(long id) {
         QueryBuilder<Comic> queryBuilder = mComicDao.queryBuilder();
         queryBuilder.join(TagRef.class, TagRefDao.Properties.Cid).where(TagRefDao.Properties.Tid.eq(id));
         return queryBuilder.orderDesc(Properties.Highlight, Properties.Favorite)
@@ -123,68 +106,65 @@ public class ComicManager {
                 .list();
     }
 
-    public long countBySource(String sourceId) {
-        return mComicDao.queryBuilder()
-                .where(Properties.SourceId.eq(sourceId), Properties.Favorite.isNotNull())
-                .count();
-    }
-
-    public Comic load(long id) {
-        return mComicDao.load(id);
-    }
-
-    public Comic load(String sourceId, String cid) {
-        return mComicDao.queryBuilder()
-                .where(Properties.SourceId.eq(sourceId), Properties.Cid.eq(cid))
-                .unique();
-    }
-
-    public Comic loadOrCreate(String sourceId, String cid) {
-        Comic comic = load(sourceId, cid);
-        return comic == null ? new Comic(sourceId, cid) : comic;
-    }
-
-    public Observable<Comic> loadLast() {
-        return mComicDao.queryBuilder()
-                .where(Properties.History.isNotNull())
-                .orderDesc(Properties.History)
-                .limit(1)
-                .rx()
-                .unique();
-    }
-
-    public void cancelHighlight() {
-        mComicDao.getDatabase().execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 0 WHERE \"HIGHLIGHT\" = 1");
-    }
-
-    public void updateOrInsert(Comic comic) {
-        if (comic.getId() == null) {
-            insert(comic);
-        } else {
-            update(comic);
+    public long countBySourceId(final String sourceId) {
+        long count = 0;
+        for (Comic comic : mComicHash) {
+            if (comic.getSourceId().equals(sourceId)) {
+                ++count;
+            }
         }
+        return count;
+    }
+
+    public Comic get(long id) {
+        return mComicHash.get(id);
+    }
+
+    public Comic get(String sourceId, String remoteId) {
+        for (Comic comic : mComicHash) {
+            if (comic.getSourceId().equals(sourceId) && comic.getRemoteId().equals(remoteId)) {
+                return comic;
+            }
+        }
+        return null;
+    }
+
+    // 修改操作
+
+    public void insertTemp(Comic comic) {
+        comic.setId(mTempId);
+        mComicHash.put(mTempId, comic);
+        --mTempId;
+    }
+
+    public void insert(Comic comic) {
+        long id = mComicDao.insert(comic);
+        comic.setId(id);
+        mComicHash.put(id, comic);
     }
 
     public void update(Comic comic) {
         mComicDao.update(comic);
     }
 
-    public void updateOrDelete(Comic comic) {
-        if (comic.getFavorite() == null && comic.getHistory() == null && comic.getDownload() == null) {
-            mComicDao.delete(comic);
-            comic.setId(null);
-        } else {
-            update(comic);
-        }
+    public void clearHistory() {
+        mComicDao.clearHistory();
+        Observable.from(mComicHash).forEach(new Action1<Comic>() {
+            @Override
+            public void call(Comic comic) {
+                comic.setHistoryTime(0);
+            }
+        });
     }
 
-    public void deleteByKey(long key) {
-        mComicDao.deleteByKey(key);
-    }
-
-    public void insert(Comic comic) {
-        long id = mComicDao.insert(comic);
-        comic.setId(id);
+    public void markAsRead() {
+        mComicDao.markAsUnread();
+        Observable.from(mComicHash).forEach(new Action1<Comic>() {
+            @Override
+            public void call(Comic comic) {
+                comic.setUnread(false);
+            }
+        });
     }
 
     public static ComicManager getInstance() {

@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -80,7 +81,7 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String title = body.text("div.main > div > div.pic > div.con > h3");
         String cover = body.src("div.main > div > div.pic > img");
@@ -88,7 +89,7 @@ public class HHAAZZ extends MangaParser {
         String author = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(1)", 3);
         String intro = body.text("#detail_block > div > p");
         boolean status = isFinish(body.text("div.main > div > div.pic > div.con > p:eq(4)"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override

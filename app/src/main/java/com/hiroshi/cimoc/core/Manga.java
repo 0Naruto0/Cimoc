@@ -4,6 +4,7 @@ import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.parser.Parser;
@@ -58,24 +59,28 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Chapter>> getComicInfo(final Parser parser, final Comic comic) {
-        return Observable.create(new Observable.OnSubscribe<List<Chapter>>() {
+    public static Observable<ComicDetail> getComicInfo(final String sourceId, final String remoteId) {
+        return Observable.create(new Observable.OnSubscribe<ComicDetail>() {
             @Override
-            public void call(Subscriber<? super List<Chapter>> subscriber) {
+            public void call(Subscriber<? super ComicDetail> subscriber) {
                 try {
-                    Request request = parser.getInfoRequest(comic.getCid());
+                    Parser parser = SourceManager.getInstance().getParser(sourceId);
+                    Request request = parser.getInfoRequest(remoteId);
                     String html = getResponseBody(App.getHttpClient(), request);
-                    parser.parseInfo(html, comic);
-                    request = parser.getChapterRequest(html, comic.getCid());
+                    ComicDetail detail = parser.parseInfo(html);
+                    if (detail.getTitle() == null) {
+                        throw new Exception();
+                    }
+                    request = parser.getChapterRequest(html, remoteId);
                     if (request != null) {
                         html = getResponseBody(App.getHttpClient(), request);
                     }
                     List<Chapter> list = parser.parseChapter(html);
                     if (!list.isEmpty()) {
-                        subscriber.onNext(list);
+                        subscriber.onNext(detail);
                         subscriber.onCompleted();
                     } else {
-                        throw new ParseErrorException();
+                        throw new Exception();
                     }
                 } catch (Exception e) {
                     subscriber.onError(e);
@@ -273,8 +278,6 @@ public class Manga {
         }
         throw new NetworkErrorException();
     }
-
-    public static class ParseErrorException extends Exception {}
 
     public static class NetworkErrorException extends Exception {}
 

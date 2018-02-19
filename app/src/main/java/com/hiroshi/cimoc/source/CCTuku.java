@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -64,7 +65,7 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String title = body.text("div.detailTop > div.content > div.info > p.title");
         String cover = body.src("div.detailTop > div.content > img");
@@ -73,7 +74,7 @@ public class CCTuku extends MangaParser {
         String author = body.text("div.detailTop > div.content > div.info > p:eq(1) > a");
         String intro = body.text("div.detailContent > p:eq(1)");
         // FIXME 手机版页面好像获取不到状态 电脑板页面太大不想用 暂时先固定为连载吧
-        comic.setInfo(title, cover, update, intro, author, false);
+        return new ComicDetail(title, cover, update, author, intro, false);
     }
 
     @Override

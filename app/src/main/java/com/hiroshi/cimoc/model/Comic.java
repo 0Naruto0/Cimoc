@@ -1,164 +1,83 @@
 package com.hiroshi.cimoc.model;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Transient;
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 
 /**
  * Created by Hiroshi on 2016/7/20.
  */
-@Entity
+
+@Entity(tableName = "comic")
 public class Comic {
 
-    @Id(autoincrement = true) private Long id;
-    @NotNull private String sourceId;
-    @NotNull private String cid;
-    @NotNull private String title;
-    @NotNull private String cover;
-    @NotNull private boolean highlight;
-    @NotNull private boolean local;
-    private String update;
-    private Boolean finish;
-    private Long favorite;
-    private Long history;
-    private Long download;
-    private String last;
-    private Integer page;
-    private String chapter;
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") private long id;
+    @ColumnInfo(name = "source_id") private String sourceId;
+    @ColumnInfo(name = "remote_id") private String remoteId;
+    @ColumnInfo(name = "title") private String title;
+    @ColumnInfo(name = "cover") private String cover;
+    @ColumnInfo(name = "last_chapter_id") private String lastChapterId;
+    @ColumnInfo(name = "last_chapter_title") private String lastChapterTitle;
+    @ColumnInfo(name = "last_page") private int lastPage;
 
-    @Transient private String intro;
-    @Transient private String author;
+    @ColumnInfo(name = "favorite_time") private long favoriteTime;
+    @ColumnInfo(name = "update") private String update;
+    @ColumnInfo(name = "completed") private boolean completed;
+    @ColumnInfo(name = "unread") private boolean unread;
 
-    public Comic(String sourceId, String cid, String title, String cover, String update, String author) {
-        this(null, sourceId, cid, title, cover == null ? "" : cover, false, false, update,
-                null, null, null, null, null, null, null);
-        this.author = author;
-    }
+    @ColumnInfo(name = "history_time") private long historyTime;
+    @ColumnInfo(name = "download_time") private long downloadTime;
 
-    public Comic(String sourceId, String cid) {
+    @Ignore private ComicDetail detail;
+
+    public Comic(String sourceId, String remoteId) {
         this.sourceId = sourceId;
-        this.cid = cid;
+        this.remoteId = remoteId;
     }
 
-    public Comic(String sourceId, String cid, String title, String cover, long download) {
-        this(null, sourceId, cid, title, cover == null ? "" : cover, false, false, null,
-                null, null, null, download, null, null, null);
-    }
-
-    @Generated(hash = 133873703)
-    public Comic(Long id, @NotNull String sourceId, @NotNull String cid, @NotNull String title,
-            @NotNull String cover, boolean highlight, boolean local, String update, Boolean finish, Long favorite,
-            Long history, Long download, String last, Integer page, String chapter) {
+    public Comic(long id, String sourceId, String remoteId, String title, String cover,
+                 String lastChapterId, String lastChapterTitle, int lastPage,
+                 long favoriteTime, String update, boolean completed, boolean unread,
+                 long historyTime, long downloadTime) {
         this.id = id;
         this.sourceId = sourceId;
-        this.cid = cid;
+        this.remoteId = remoteId;
         this.title = title;
         this.cover = cover;
-        this.highlight = highlight;
-        this.local = local;
+        this.lastChapterId = lastChapterId;
+        this.lastChapterTitle = lastChapterTitle;
+        this.lastPage = lastPage;
+        this.favoriteTime = favoriteTime;
         this.update = update;
-        this.finish = finish;
-        this.favorite = favorite;
-        this.history = history;
-        this.download = download;
-        this.last = last;
-        this.page = page;
-        this.chapter = chapter;
+        this.completed = completed;
+        this.unread = unread;
+        this.historyTime = historyTime;
+        this.downloadTime = downloadTime;
     }
 
-    @Generated(hash = 1347984162)
-    public Comic() {
+    public long getId() {
+        return id;
     }
 
-
-
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof Comic && ((Comic) o).id.equals(id);
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setInfo(String title, String cover, String update, String intro, String author, boolean finish) {
-        if (title != null) {
-            this.title = title;
-        }
-        if (cover != null) {
-            this.cover = cover;
-        }
-        if (update != null) {
-            this.update = update;
-        }
-        this.intro = intro;
-        if (author != null) {
-            this.author = author;
-        }
-        this.finish = finish;
-        this.highlight = false;
+    public String getSourceId() {
+        return sourceId;
     }
 
-    public String getIntro() {
-        return intro;
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
-    public void setIntro(String intro) {
-        this.intro = intro;
+    public String getRemoteId() {
+        return remoteId;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public Integer getPage() {
-        return page;
-    }
-
-    public void setPage(Integer page) {
-        this.page = page;
-    }
-
-    public String getLast() {
-        return last;
-    }
-
-    public void setLast(String last) {
-        this.last = last;
-    }
-
-    public Long getHistory() {
-        return history;
-    }
-
-    public void setHistory(Long history) {
-        this.history = history;
-    }
-
-    public Long getFavorite() {
-        return favorite;
-    }
-
-    public void setFavorite(Long favorite) {
-        this.favorite = favorite;
-    }
-
-    public String getUpdate() {
-        return update;
-    }
-
-    public void setUpdate(String update) {
-        this.update = update;
-    }
-
-    public String getCover() {
-        return cover;
-    }
-
-    public void setCover(String cover) {
-        this.cover = cover;
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 
     public String getTitle() {
@@ -169,76 +88,92 @@ public class Comic {
         this.title = title;
     }
 
-    public String getCid() {
-        return cid;
+    public String getCover() {
+        return cover;
     }
 
-    public void setCid(String cid) {
-        this.cid = cid;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
-    public String getSource() {
-        return sourceId;
+    public String getLastChapterId() {
+        return lastChapterId;
     }
 
-    public void setSource(String sourceId) {
-        this.sourceId = sourceId;
+    public void setLastChapterId(String lastChapterId) {
+        this.lastChapterId = lastChapterId;
     }
 
-    public Long getId() {
-        return id;
+    public String getLastChapterTitle() {
+        return lastChapterTitle;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setLastChapterTitle(String lastChapterTitle) {
+        this.lastChapterTitle = lastChapterTitle;
     }
 
-    public boolean getHighlight() {
-        return highlight;
+    public int getLastPage() {
+        return lastPage;
     }
 
-    public void setHighlight(boolean highlight) {
-        this.highlight = highlight;
+    public void setLastPage(int lastPage) {
+        this.lastPage = lastPage;
     }
 
-    public Long getDownload() {
-        return download;
+    public long getFavoriteTime() {
+        return favoriteTime;
     }
 
-    public void setDownload(Long download) {
-        this.download = download;
+    public void setFavoriteTime(long favoriteTime) {
+        this.favoriteTime = favoriteTime;
     }
 
-    public Boolean getFinish() {
-        return finish;
+    public String getUpdate() {
+        return update;
     }
 
-    public void setFinish(Boolean finish) {
-        this.finish = finish;
+    public void setUpdate(String update) {
+        this.update = update;
     }
 
-    public boolean getLocal() {
-        return local;
+    public boolean isCompleted() {
+        return completed;
     }
 
-    public void setLocal(boolean local) {
-        this.local = local;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
-    public String getChapter() {
-        return chapter;
+    public boolean isUnread() {
+        return unread;
     }
 
-    public void setChapter(String chapter) {
-        this.chapter = chapter;
+    public void setUnread(boolean unread) {
+        this.unread = unread;
     }
 
-    public String getSourceId() {
-        return this.sourceId;
+    public long getHistoryTime() {
+        return historyTime;
     }
 
-    public void setSourceId(String sourceId) {
-        this.sourceId = sourceId;
+    public void setHistoryTime(long historyTime) {
+        this.historyTime = historyTime;
+    }
+
+    public long getDownloadTime() {
+        return downloadTime;
+    }
+
+    public void setDownloadTime(long downloadTime) {
+        this.downloadTime = downloadTime;
+    }
+
+    public ComicDetail getDetail() {
+        return detail;
+    }
+
+    public void setDetail(ComicDetail detail) {
+        this.detail = detail;
     }
 
 }

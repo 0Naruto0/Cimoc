@@ -12,6 +12,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupp
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.ui.widget.ChapterButton;
 
 import java.util.List;
@@ -30,9 +31,9 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     private String update;
     private String author;
     private String intro;
-    private Boolean finish;
+    private Boolean completed;
 
-    private String last;
+    private String chapterId;
 
     static class ChapterHolder extends BaseViewHolder {
         @BindView(R.id.item_chapter_button) ChapterButton chapterButton;
@@ -46,7 +47,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         @BindView(R.id.item_header_comic_image) SimpleDraweeView mComicImage;
         @BindView(R.id.item_header_comic_title) TextView mComicTitle;
         @BindView(R.id.item_header_comic_intro) TextView mComicIntro;
-        @BindView(R.id.item_header_comic_status) TextView mComicStatus;
+        @BindView(R.id.item_header_comic_status) TextView mComicCompleted;
         @BindView(R.id.item_header_comic_update) TextView mComicUpdate;
         @BindView(R.id.item_header_comic_author) TextView mComicAuthor;
 
@@ -95,14 +96,43 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         return new ChapterHolder(view);
     }
 
-    public void setInfo(String cover, String title, String author, String intro, Boolean finish, String update, String last) {
-        this.cover = cover;
-        this.title = title;
-        this.intro = intro;
-        this.finish = finish;
-        this.update = update;
-        this.author = author;
-        this.last = last;
+    public void setDetail(ComicDetail detail, String chapterId) {
+        this.cover = detail.getCover();
+        this.title = detail.getTitle();
+        this.intro = detail.getIntro();
+        this.completed = detail.isCompleted();
+        this.update = detail.getUpdate();
+        this.author = detail.getAuthor();
+        this.chapterId = chapterId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setChapterId(String chapterId) {
+        if (chapterId == null || chapterId.equals(this.chapterId)) {
+            return;
+        }
+        this.chapterId = chapterId;
+        // TODO 不要 notify 全部
+        notifyDataSetChanged();
+    }
+
+    public Chapter getLastChapter() {
+        if (chapterId == null) {
+            return mDataSet.get(mDataSet.size() - 1);
+        }
+        for (Chapter chapter : mDataSet) {
+            if (chapterId.equals(chapter.getId())) {
+                return chapter;
+            }
+        }
+        return mDataSet.get(mDataSet.size() - 1);
     }
 
     @Override
@@ -116,11 +146,9 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 }
                 headerHolder.mComicTitle.setText(title);
                 headerHolder.mComicIntro.setText(intro);
-                if (finish != null) {
-                    headerHolder.mComicStatus.setText(finish ? "完结" : "连载中");
-                }
+                headerHolder.mComicCompleted.setText(completed ? R.string.comic_detail_completed : R.string.comic_detail_ongoing);
                 if (update != null) {
-                    headerHolder.mComicUpdate.setText("最后更新：".concat(update));
+                    headerHolder.mComicUpdate.setText(mContext.getString(R.string.comic_detail_update, update));
                 }
                 headerHolder.mComicAuthor.setText(author);
             }
@@ -128,8 +156,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             Chapter chapter = mDataSet.get(position - 1);
             ChapterHolder viewHolder = (ChapterHolder) holder;
             viewHolder.chapterButton.setText(chapter.getTitle());
-            viewHolder.chapterButton.setDownload(chapter.isComplete());
-            if (chapter.getPath().equals(last)) {
+            viewHolder.chapterButton.setDownload(chapter.isCompleted());
+            if (chapterId != null && chapter.getId().equals(chapterId)) {
                 viewHolder.chapterButton.setSelected(true);
             } else if (viewHolder.chapterButton.isSelected()) {
                 viewHolder.chapterButton.setSelected(false);
@@ -151,22 +179,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
 
     public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier supplier) {
         this.mControllerSupplier = supplier;
-    }
-
-    public void setLast(String value) {
-        if (value == null || value.equals(last)) {
-            return;
-        }
-        String temp = last;
-        last = value;
-        for (int i = 0; i != mDataSet.size(); ++i) {
-            String path = mDataSet.get(i).getPath();
-            if (path.equals(last)) {
-                notifyItemChanged(i + 1);
-            } else if (path.equals(temp)) {
-                notifyItemChanged(i + 1);
-            }
-        }
     }
 
 }

@@ -33,7 +33,7 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/11/14.
  */
 
-public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemClickListener {
+public abstract class ChapterActivity extends BackActivity implements BaseAdapter.OnItemClickListener {
 
     @BindView(R.id.chapter_recycler_view) RecyclerView mRecyclerView;
 
@@ -155,9 +155,9 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
         return getString(R.string.chapter);
     }
 
-    public static Intent createIntent(Context context, ArrayList<Chapter> list) {
+    public static Intent createIntent(Context context, long id) {
         Intent intent = new Intent(context, ChapterActivity.class);
-        intent.putExtra(Extra.EXTRA_CHAPTER, list);
+        intent.putExtra(Extra.EXTRA_ID, id);
         return intent;
     }
 

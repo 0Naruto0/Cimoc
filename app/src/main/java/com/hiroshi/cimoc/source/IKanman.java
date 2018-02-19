@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -73,7 +74,7 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String title = body.text("div.book-title > h1");
         String cover = body.src("p.hcover > img");
@@ -81,7 +82,7 @@ public class IKanman extends MangaParser {
         String author = body.attr("ul.detail-list > li:eq(1) > span:eq(1) > a", "title");
         String intro = body.text("#intro-cut");
         boolean status = isFinish(body.text("div.chapter-bar > span.fr > span:eq(0)"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override

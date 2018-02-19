@@ -1,18 +1,17 @@
 package com.hiroshi.cimoc.model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Transient;
 
 /**
  * Created by Hiroshi on 2016/9/1.
  */
-@Entity
+
+@Entity(tableName = "task")
 public class Task implements Parcelable {
 
     public static final int STATE_FINISH = 0;
@@ -22,96 +21,84 @@ public class Task implements Parcelable {
     public static final int STATE_WAIT = 4;
     public static final int STATE_ERROR = 5;
 
-    @Id(autoincrement = true) private Long id;
-    @NotNull private long key;      // 漫画主键
-    @NotNull private String path;
-    @NotNull private String title;
-    @NotNull private int progress;
-    @NotNull private int max;
+    @PrimaryKey(autoGenerate = true) private long id;
+    @ColumnInfo(name = "comic_id") private long comicId;
+    @ColumnInfo(name = "chapter_id") private String chapterId;
+    @ColumnInfo(name = "title") private String title;
+    @ColumnInfo(name = "progress") private int progress;
+    @ColumnInfo(name = "max") private int max;
 
-    @Transient private String sourceId;
-    @Transient private String cid;  // 漫画 ID
-    @Transient private int state;
+    @Ignore private int state;
 
-    public Task(Parcel source) {
-        this.id = source.readLong();
-        this.key = source.readLong();
-        this.path = source.readString();
-        this.title = source.readString();
-        this.progress = source.readInt();
-        this.max = source.readInt();
-        this.sourceId = source.readString();
-        this.cid = source.readString();
-        this.state = source.readInt();
-    }
-
-    @Generated(hash = 1668809946)
-    public Task(Long id, long key, @NotNull String path, @NotNull String title, int progress,
-            int max) {
+    public Task(long id, long comicId, String chapterId, String title, int progress, int max) {
         this.id = id;
-        this.key = key;
-        this.path = path;
+        this.comicId = comicId;
+        this.chapterId = chapterId;
         this.title = title;
         this.progress = progress;
         this.max = max;
+        this.state = STATE_WAIT;
     }
 
-    @Generated(hash = 733837707)
-    public Task() {
+    @Ignore
+    public Task(long comicId, String chapterId, String title) {
+        this(0, comicId, chapterId, title, 0, 0);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof Task && ((Task) o).id.equals(id);
+    @Ignore
+    public Task(String chapterId, String title) {
+        this(0, 0, chapterId, title, 0, 0);
     }
 
-    @Override
-    public int hashCode() {
-        return id == null ? super.hashCode() : id.hashCode();
+    @Ignore
+    public Task(Parcel source) {
+        this(source.readLong(), source.readLong(), source.readString(),
+                source.readString(), source.readInt(), source.readInt());
+        this.state = source.readInt();
     }
 
-    public Long getId() {
-        return this.id;
+    public long getId() {
+        return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public long getKey() {
-        return this.key;
+    public long getComicId() {
+        return comicId;
     }
 
-    public void setKey(long key) {
-        this.key = key;
+    public void setComicId(long comicId) {
+        this.comicId = comicId;
     }
 
-    public String getPath() {
-        return this.path;
+    public String getChapterId() {
+        return chapterId;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public int getProgress() {
-        return this.progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
+    public void setChapterId(String chapterId) {
+        this.chapterId = chapterId;
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
     }
 
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
     public int getMax() {
-        return this.max;
+        return max;
     }
 
     public void setMax(int max) {
@@ -119,31 +106,20 @@ public class Task implements Parcelable {
     }
 
     public int getState() {
-        return this.state;
+        return state;
     }
 
     public void setState(int state) {
         this.state = state;
     }
 
-    public String getSource() {
-        return this.sourceId;
-    }
-
-    public void setSource(String sourceId) {
-        this.sourceId = sourceId;
-    }
-
-    public String getCid() {
-        return cid;
-    }
-
-    public void setCid(String cid) {
-        this.cid = cid;
-    }
-
-    public boolean isFinish() {
+    public boolean isCompleted() {
         return max != 0 && progress == max;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Task && ((Task) o).id == id;
     }
 
     @Override
@@ -154,13 +130,11 @@ public class Task implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
-        dest.writeLong(key);
-        dest.writeString(path);
+        dest.writeLong(comicId);
+        dest.writeString(chapterId);
         dest.writeString(title);
         dest.writeInt(progress);
         dest.writeInt(max);
-        dest.writeString(sourceId);
-        dest.writeString(cid);
         dest.writeInt(state);
     }
 

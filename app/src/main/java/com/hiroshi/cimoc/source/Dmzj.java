@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -82,25 +83,21 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
-        try {
-            JSONObject object = new JSONObject(html);
-            String title = object.getString("title");
-            String cover = object.getString("cover");
-            Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
-            String update = time == null ? null : StringUtils.getFormatTime("yyyy-MM-dd", time);
-            String intro = object.optString("description");
-            StringBuilder sb = new StringBuilder();
-            JSONArray array = object.getJSONArray("authors");
-            for (int i = 0; i < array.length(); ++i) {
-                sb.append(array.getJSONObject(i).getString("tag_name")).append(" ");
-            }
-            String author = sb.toString();
-            boolean status = object.getJSONArray("status").getJSONObject(0).getInt("tag_id") == 2310;
-            comic.setInfo(title, cover, update, intro, author, status);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public ComicDetail parseInfo(String html) throws Exception {
+        JSONObject object = new JSONObject(html);
+        String title = object.getString("title");
+        String cover = object.getString("cover");
+        Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
+        String update = time == null ? null : StringUtils.getFormatTime("yyyy-MM-dd", time);
+        String intro = object.optString("description");
+        StringBuilder sb = new StringBuilder();
+        JSONArray array = object.getJSONArray("authors");
+        for (int i = 0; i < array.length(); ++i) {
+            sb.append(array.getJSONObject(i).getString("tag_name")).append(" ");
         }
+        String author = sb.toString();
+        boolean status = object.getJSONArray("status").getJSONObject(0).getInt("tag_id") == 2310;
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override

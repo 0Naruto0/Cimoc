@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -112,10 +113,9 @@ public class MangaNel extends MangaParser {
      * 解析详情
      *
      * @param html  页面源代码
-     * @param comic 漫画实体类，需要设置其中的字段
      */
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public ComicDetail parseInfo(String html) {
         Node body = new Node(html);
         String title = body.text("div.manga-info-top > ul.manga-info-text > li > h1");
         String cover = body.src("div.manga-info-pic > img");
@@ -128,7 +128,7 @@ public class MangaNel extends MangaParser {
         boolean status = isFinish(body.list("div.manga-info-top >  ul.manga-info-text > li")
             .get(2)
             .text());
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
     
     /**

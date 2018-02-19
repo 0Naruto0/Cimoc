@@ -4,6 +4,7 @@ import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDetail;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.SearchResult;
 import com.hiroshi.cimoc.model.Source;
@@ -67,7 +68,7 @@ public class PuFei extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public ComicDetail parseInfo(String html) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
         String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
@@ -75,7 +76,7 @@ public class PuFei extends MangaParser {
         String author = body.text("div.book-detail > div.cont-list > dl:eq(3) > dd");
         String intro = body.text("#bookIntro");
         boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        return new ComicDetail(title, cover, update, intro, author, status);
     }
 
     @Override
